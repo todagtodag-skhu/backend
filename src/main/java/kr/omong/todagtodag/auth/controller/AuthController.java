@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final SocialLoginService socialLoginService;
 
     @Operation(summary = "소셜 로그인", description = "소셜 SDK에서 받은 토큰으로 JWT(access/refresh)를 발급합니다.")
-    @PostMapping("/api/login/{provider}")
+    @PostMapping("/auth/login/{provider}")
     @ResponseStatus(HttpStatus.OK)
     public ApiResponse<AuthResponse> socialLogin(
             @PathVariable SocialProvider provider,

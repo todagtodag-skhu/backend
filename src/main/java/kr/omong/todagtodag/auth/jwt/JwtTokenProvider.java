@@ -32,7 +32,7 @@ public class JwtTokenProvider {
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(String.valueOf(user.getId()))
                 .issueTime(Date.from(now))
-                .expirationTime(Date.from(now.plusSeconds(jwtProperties.accessTokenExpirationSeconds())))
+                .expirationTime(Date.from(now.plusSeconds(jwtProperties.accessTokenExpirationMillSecond())))
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().name())
                 .build();

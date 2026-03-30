@@ -3,7 +3,7 @@ package kr.omong.todagtodag.domain.user.controller;
 import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
-import kr.omong.todagtodag.domain.user.dto.OnboardingRequest;
+import kr.omong.todagtodag.domain.user.dto.UserOnboardingRequest;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class UserController {
     @PostMapping("/onboarding")
     public ResponseEntity<AuthResponse> onboarding(
             @AuthenticationPrincipal(expression = "principal") Long userId,
-            @Valid @RequestBody OnboardingRequest request
+            @Valid @RequestBody UserOnboardingRequest request
     ) {
         User user = userService.onboard(userId, request.role());
         return ResponseEntity.ok(new AuthResponse(

@@ -9,10 +9,10 @@ import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
 import kr.omong.todagtodag.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,11 +25,11 @@ public class UserController {
 
     @Operation(
             summary = "토닥이 온보딩",
-            description = "임시 수동 테스트용으로 userId를 쿼리 파라미터로 받습니다. inviteCode를 입력하면 역할을 TODAK으로 변경하고 관계를 연결합니다."
+            description = "PENDING 권한의 access token으로 호출합니다. inviteCode를 입력하면 역할을 TODAK으로 변경하고 관계를 연결합니다."
     )
     @PostMapping("/onboarding/todak")
     public ResponseEntity<AuthResponse> onboardTodak(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @Valid @RequestBody TodakOnboardingRequest request
     ) {
         return ResponseEntity.ok(userService.onboardTodak(userId, request));
@@ -37,11 +37,11 @@ public class UserController {
 
     @Operation(
             summary = "성장이 온보딩",
-            description = "임시 수동 테스트용으로 userId를 쿼리 파라미터로 받습니다. 성장이 이름, 스티커판 종류, 생일을 저장하고 역할을 SUNGJANG으로 변경합니다."
+            description = "PENDING 권한의 access token으로 호출합니다. 성장이 이름, 스티커판 종류, 생일을 저장하고 역할을 SUNGJANG으로 변경합니다."
     )
     @PostMapping("/onboarding/sungjang")
     public ResponseEntity<AuthResponse> onboardSungjang(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @Valid @RequestBody SungjangOnboardingRequest request
     ) {
         return ResponseEntity.ok(userService.onboardSungjang(userId, request));

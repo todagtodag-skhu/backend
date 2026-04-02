@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Profile("local")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/test")
 @Tag(name = "테스트 인증 API", description = "local 프로필에서만 사용하는 테스트용 인증 API")
 public class TestAuthController {
 

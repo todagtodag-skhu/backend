@@ -58,14 +58,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            set -euxo pipefail
-            whoami
-            hostname
+            set -e
             cd /home/ubuntu/todagtodag
-            pwd
-            ls -la
-            docker compose pull
-            docker compose up -d --force-recreate
-            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
-            docker inspect todagtodag-backend --format='{{.Image}}'
+            docker compose pull backend
+            docker compose up -d --force-recreate backend
             docker image prune -f

@@ -1,6 +1,11 @@
 package kr.omong.todagtodag.domain.user.entity;
 
 public enum Role {
+    PENDING,
     SUNGJANG,
-    TODAK
+    TODAK;
+
+    public boolean isSelectableForOnboarding() {
+        return this == SUNGJANG || this == TODAK;
+    }
 }

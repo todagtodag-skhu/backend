@@ -1,5 +1,6 @@
 package kr.omong.todagtodag.domain.auth.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class SocialLoginService {
             UserRepository userRepository,
             UserService userService,
             JwtTokenProvider jwtTokenProvider,
-            java.util.List<OAuthTokenVerifier> verifiers
+            List<OAuthTokenVerifier> verifiers
     ) {
         this.userRepository = userRepository;
         this.userService = userService;
@@ -53,19 +54,19 @@ public class SocialLoginService {
     }
 
     private AuthResponse toExistingUserResponse(User user) {
-        return new AuthResponse(
-                false,
-                jwtTokenProvider.createAccessToken(user),
-                user.getRole()
-        );
+        return AuthResponse.builder()
+                .isNewUser(false)
+                .accessToken(jwtTokenProvider.createAccessToken(user))
+                .role(user.getRole())
+                .build();
     }
 
     private AuthResponse createNewUserResponse(String providerId) {
         User user = userService.createAppleUser(providerId);
-        return new AuthResponse(
-                true,
-                jwtTokenProvider.createAccessToken(user),
-                user.getRole()
-        );
+        return AuthResponse.builder()
+                .isNewUser(true)
+                .accessToken(jwtTokenProvider.createAccessToken(user))
+                .role(user.getRole())
+                .build();
     }
 }

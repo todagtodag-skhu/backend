@@ -51,3 +51,5 @@ src/main/resources/application-secret.yml
 src/main/resources/application-secret.yaml
 application-secret.yml
 application-secret.yaml
+test/*
+/src/test/resources/application-test.yml

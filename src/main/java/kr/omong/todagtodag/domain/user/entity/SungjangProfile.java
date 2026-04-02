@@ -2,12 +2,12 @@ package kr.omong.todagtodag.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,23 +17,27 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @Entity
-@Table(name = "users")
+@Table(
+        name = "sungjang_profile",
+        uniqueConstraints = @UniqueConstraint(columnNames = "user_id")
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User {
+public class SungjangProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String providerId;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "varchar(20)")
-    private Role role;
+    @Column(nullable = false, length = 5)
+    private String growthName;
 
-    public void updateRole(Role role) {
-        this.role = role;
-    }
+    @Column(nullable = false)
+    private String stickerBoardType;
+
+    @Column(nullable = false)
+    private LocalDate birthday;
 }

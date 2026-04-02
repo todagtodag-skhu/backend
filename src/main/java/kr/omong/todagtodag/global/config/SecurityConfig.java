@@ -30,11 +30,13 @@ public class SecurityConfig {
                                 "/",
                                 "/error",
                                 "/api/auth/login/**",
+                                "/api/auth/test-user",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/relation/**"
                         ).permitAll()
-                        .requestMatchers("/users/onboarding").authenticated()
+                        .requestMatchers("/users/onboarding/**").hasRole("PENDING")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

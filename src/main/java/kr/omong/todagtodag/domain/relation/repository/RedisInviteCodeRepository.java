@@ -1,5 +1,6 @@
 package kr.omong.todagtodag.domain.relation.repository;
 
+import org.springframework.context.annotation.Profile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 @Repository
+@Profile("!local")
 @RequiredArgsConstructor
 public class RedisInviteCodeRepository implements InviteCodeRepository {
 

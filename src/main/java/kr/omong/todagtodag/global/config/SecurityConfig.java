@@ -30,11 +30,12 @@ public class SecurityConfig {
                                 "/",
                                 "/error",
                                 "/api/auth/login/**",
+                                "/api/auth/test-user",
+                                "/users/onboarding/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/users/onboarding").authenticated()
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

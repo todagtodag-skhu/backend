@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Getter
 @Builder
 @Entity
@@ -39,10 +41,18 @@ public class UserRelation {
     @JoinColumn(name = "sungjang_id", nullable = false)
     private User sungjang;
 
+    private String sungjangName;
+    private Date sungjangBirthday;
+
     public static UserRelation of(User todak, User sungjang) {
         return UserRelation.builder()
                 .todak(todak)
                 .sungjang(sungjang)
                 .build();
+    }
+
+    public void updateSungjangInfo(String name, Date birthday) {
+        this.sungjangName = name;
+        this.sungjangBirthday = birthday;
     }
 }

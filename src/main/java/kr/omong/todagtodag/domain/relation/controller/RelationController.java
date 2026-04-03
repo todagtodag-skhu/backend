@@ -31,7 +31,7 @@ public class RelationController {
                     """
                     성장이가 코드를 생성합니다.
                     
-                    경로 변수에 성장이 유저 id가 필요하며, 생성된 코드를 body로 반환합니다.
+                    헤더에 accessToken을 담아 호출해야 하며, 생성된 코드를 body로 반환합니다.
                     
                     생성된 코드는 5분 동안 유지됩니다.
                     
@@ -57,7 +57,9 @@ public class RelationController {
                     """
                     토닥이 유저가 코드를 입력하여 성장이와 연결합니다.
                     
-                    경로 변수에 토닥이 유저 id가 필요하고, code를 body로 입력해야 합니다.
+                    헤더에 accessToken을 담아 호출해야 하며, code를 body로 입력해야 합니다.
+                    
+                    연결에 성공했다면, 연결된 관계의 id값을 반환합니다.
                     
                     성장이 유저가 이 API를 실행할 경우, 그리고 이미 관계가 존재할 경우 에러가 발생합니다.
                     """

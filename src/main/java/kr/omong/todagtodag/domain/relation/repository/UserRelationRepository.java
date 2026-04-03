@@ -9,4 +9,6 @@ public interface UserRelationRepository extends JpaRepository<UserRelation, Long
     boolean existsByTodakIdAndSungjangId(Long toakId, Long sungjangId);
 
     Optional<UserRelation> findBySungjangId(Long sungjangId);
+
+    void deleteAllByTodakIdOrSungjangId(Long todakId, Long sungjangId);
 }

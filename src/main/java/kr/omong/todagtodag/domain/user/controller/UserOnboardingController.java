@@ -10,6 +10,7 @@ import kr.omong.todagtodag.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-@Tag(name = "유저 온보딩 API", description = "신규 유저의 역할별 온보딩을 처리합니다.")
-public class UserOnBoardingController {
+@Tag(name = "유저 API", description = "유저 온보딩, 로그아웃, 회원 탈퇴를 처리합니다.")
+public class UserOnboardingController {
 
     private final UserService userService;
 
@@ -45,5 +46,26 @@ public class UserOnBoardingController {
             @Valid @RequestBody SungjangOnboardingRequest request
     ) {
         return ResponseEntity.ok(userService.onboardSungjang(userId, request));
+    }
+
+    @Operation(
+            summary = "로그아웃",
+            description = "클라이언트에서 accessToken을 삭제하여 로그아웃 처리합니다."
+    )
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "회원 탈퇴",
+            description = "현재 로그인된 사용자의 계정을 삭제합니다."
+    )
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<Void> withdraw(
+            @AuthenticationPrincipal Long userId
+    ) {
+        userService.withdraw(userId);
+        return ResponseEntity.noContent().build();
     }
 }

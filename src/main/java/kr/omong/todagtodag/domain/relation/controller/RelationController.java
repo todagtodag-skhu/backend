@@ -81,6 +81,22 @@ public class RelationController {
         return ResponseEntity.ok(new UserRelationConnectResponse(sungjangId));
     }
 
+    @Operation(
+            summary = "성장이 정보 수정",
+            description =
+                    """
+                    성장이의 이름과 생일을 수정합니다.
+                    
+                    헤더에 토닥이 유저의 accessToken을, body로는 수정할 이름과 생일을 담아 요청합니다.
+                    
+                    경로 변수에 해당 관계의 id가 필요합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토큰 유저가 참여하고 있는 관계가 아님"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 유저이거나, 존재하지 않는 관계 id")
+    })
     @PostMapping("/update/{relationId}")
     public ResponseEntity<Void> updateSungjangInfo(
             @AuthenticationPrincipal Long userId,

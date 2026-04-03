@@ -4,7 +4,6 @@ import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
-import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.user.dto.SungjangOnboardingRequest;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
@@ -24,7 +23,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final RelationService relationService;
     private final SungjangProfileRepository sungjangProfileRepository;
-    private final UserRelationRepository userRelationRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -68,14 +66,6 @@ public class UserService {
                         .build()
         );
         return buildAuthResponse(user);
-    }
-
-    @Transactional
-    public void withdraw(Long userId) {
-        User user = getById(userId);
-        sungjangProfileRepository.deleteByUserId(userId);
-        userRelationRepository.deleteAllByTodakIdOrSungjangId(userId, userId);
-        userRepository.delete(user);
     }
 
     private User updateRoleForPendingUser(Long userId, Role role) {

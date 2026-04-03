@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UserRelationRepository extends JpaRepository<UserRelation, Long> {
     boolean existsByTodakIdAndSungjangId(Long toakId, Long sungjangId);
 
+    Optional<UserRelation> findByTodakId(Long todakId);
+
     Optional<UserRelation> findBySungjangId(Long sungjangId);
 
     void deleteAllByTodakIdOrSungjangId(Long todakId, Long sungjangId);

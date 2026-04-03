@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectRequest;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +31,7 @@ public class RelationController {
                     """
                     성장이가 코드를 생성합니다.
                     
-                    경로 변수에 성장이 유저 id가 필요하며, 생성된 코드를 body로 반환합니다.
+                    헤더에 accessToken을 담아 호출해야 하며, 생성된 코드를 body로 반환합니다.
                     
                     생성된 코드는 5분 동안 유지됩니다.
                     
@@ -41,11 +43,11 @@ public class RelationController {
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 성장이 유저로 요청"),
             @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음")
     })
-    @PostMapping("/invite-code/{sungjangId}")
+    @PostMapping("/invite-code/sungjang")
     public ResponseEntity<UserRelationInviteCodeResponse> generateInviteCode(
-            @PathVariable Long sungjangId
+            @AuthenticationPrincipal Long userId
     ) {
-        String code = relationService.generateInviteCode(sungjangId);
+        String code = relationService.generateInviteCode(userId);
         return ResponseEntity.ok(new UserRelationInviteCodeResponse(code));
     }
 
@@ -55,7 +57,9 @@ public class RelationController {
                     """
                     토닥이 유저가 코드를 입력하여 성장이와 연결합니다.
                     
-                    경로 변수에 토닥이 유저 id가 필요하고, code를 body로 입력해야 합니다.
+                    헤더에 accessToken을 담아 호출해야 하며, code를 body로 입력해야 합니다.
+                    
+                    연결에 성공했다면, 연결된 관계의 id값을 반환합니다.
                     
                     성장이 유저가 이 API를 실행할 경우, 그리고 이미 관계가 존재할 경우 에러가 발생합니다.
                     """
@@ -67,12 +71,12 @@ public class RelationController {
             @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음"),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 유저 관계")
     })
-    @PostMapping("/connect/{todakId}")
-    public ResponseEntity<Void> connect(
-            @PathVariable Long todakId,
+    @PostMapping("/connect/todak")
+    public ResponseEntity<UserRelationConnectResponse> connect(
+            @AuthenticationPrincipal Long userId,
             @RequestBody UserRelationConnectRequest request
     ) {
-        relationService.connectByCode(todakId, request.code());
-        return ResponseEntity.ok().build();
+        Long sungjangId = relationService.connectByCode(userId, request.code());
+        return ResponseEntity.ok(new UserRelationConnectResponse(sungjangId));
     }
 }

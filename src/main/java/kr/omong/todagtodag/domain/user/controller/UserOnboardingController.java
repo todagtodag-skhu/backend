@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Tag(name = "유저 온보딩 API", description = "신규 유저의 역할별 온보딩을 처리합니다.")
-public class UserOnBoardingController {
+public class UserOnboardingController {
 
     private final UserService userService;
 

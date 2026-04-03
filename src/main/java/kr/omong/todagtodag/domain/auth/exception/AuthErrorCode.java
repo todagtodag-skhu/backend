@@ -15,6 +15,7 @@ public enum AuthErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     INVALID_ONBOARDING_ROLE(HttpStatus.BAD_REQUEST, "온보딩 역할 값이 올바르지 않습니다."),
     ONBOARDING_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "이미 온보딩이 완료된 사용자입니다."),
+    WITHDRAW_FORBIDDEN_ROLE(HttpStatus.FORBIDDEN, "성장이 유저는 회원 탈퇴를 요청할 수 없습니다."),
     INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "Authorization 헤더 형식이 올바르지 않습니다."),
     ACCESS_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Access Token이 유효하지 않습니다."),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access Token이 만료되었습니다.");

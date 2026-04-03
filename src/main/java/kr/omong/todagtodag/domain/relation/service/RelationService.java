@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.model.InviteCodeGenerator;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationErrorCode;
@@ -54,14 +55,38 @@ public class RelationService {
         return relation.getId();
     }
 
+    public void updateSungjangInfoByRelationId(Long todakId, Long relationId, UserRelationUpdateSungjangInfoRequest request) {
+        User todak = getUserById(todakId);
+        UserRelation relation = getRelationById(relationId);
+
+        validateRole(todak, Role.TODAK);
+        validateRelation(todak, relation);
+
+        relation.updateSungjangInfo(
+                request.name(),
+                request.birthday()
+        );
+    }
+
     private void validateRole(User user, Role role) {
         if (!user.getRole().equals(role)) {
             throw new RelationException(RelationErrorCode.ROLE_MISMATCH);
         }
     }
 
+    private void validateRelation(User todak, UserRelation relation) {
+        if (relation.getTodak() != todak) {
+            throw new RelationException(RelationErrorCode.RELATION_TODAK_MISMATCH);
+        }
+    }
+
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+    }
+
+    private UserRelation getRelationById(Long relationId) {
+        return userRelationRepository.findById(relationId)
+                .orElseThrow(() -> new RelationException(RelationErrorCode.RELATION_NOT_FOUND));
     }
 }

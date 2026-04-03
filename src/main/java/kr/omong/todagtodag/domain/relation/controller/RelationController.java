@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectRequest;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +79,15 @@ public class RelationController {
     ) {
         Long sungjangId = relationService.connectByCode(userId, request.code());
         return ResponseEntity.ok(new UserRelationConnectResponse(sungjangId));
+    }
+
+    @PostMapping("/update/{relationId}")
+    public ResponseEntity<Void> updateSungjangInfo(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long relationId,
+            @RequestBody UserRelationUpdateSungjangInfoRequest request
+            ) {
+        relationService.updateSungjangInfoByRelationId(userId, relationId, request);
+        return ResponseEntity.ok().build();
     }
 }

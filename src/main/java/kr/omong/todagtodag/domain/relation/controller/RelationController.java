@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectRequest;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
@@ -69,11 +70,11 @@ public class RelationController {
             @ApiResponse(responseCode = "409", description = "이미 존재하는 유저 관계")
     })
     @PostMapping("/connect/todak")
-    public ResponseEntity<Void> connect(
+    public ResponseEntity<UserRelationConnectResponse> connect(
             @AuthenticationPrincipal Long userId,
             @RequestBody UserRelationConnectRequest request
     ) {
-        relationService.connectByCode(userId, request.code());
-        return ResponseEntity.ok().build();
+        Long sungjangId = relationService.connectByCode(userId, request.code());
+        return ResponseEntity.ok(new UserRelationConnectResponse(sungjangId));
     }
 }

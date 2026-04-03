@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.model.InviteCodeGenerator;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationErrorCode;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
@@ -34,7 +35,7 @@ public class RelationService {
     }
 
     @Transactional
-    public void connectByCode(Long todakId, String code) {
+    public Long connectByCode(Long todakId, String code) {
         User todak = getUserById(todakId);
         validateRole(todak, Role.TODAK);
 
@@ -47,8 +48,10 @@ public class RelationService {
             throw new RelationException(RelationErrorCode.RELATION_ALREADY_EXISTS);
         }
 
-        userRelationRepository.save(UserRelation.of(todak, sungjang));
         inviteCodeRepository.delete(code);
+        UserRelation relation = userRelationRepository.save(UserRelation.of(todak, sungjang));
+
+        return relation.getId();
     }
 
     private void validateRole(User user, Role role) {

@@ -9,6 +9,7 @@ import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,11 +42,11 @@ public class RelationController {
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 성장이 유저로 요청"),
             @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음")
     })
-    @PostMapping("/invite-code/{sungjangId}")
+    @PostMapping("/invite-code/sungjang")
     public ResponseEntity<UserRelationInviteCodeResponse> generateInviteCode(
-            @PathVariable Long sungjangId
+            @AuthenticationPrincipal Long userId
     ) {
-        String code = relationService.generateInviteCode(sungjangId);
+        String code = relationService.generateInviteCode(userId);
         return ResponseEntity.ok(new UserRelationInviteCodeResponse(code));
     }
 
@@ -67,12 +68,12 @@ public class RelationController {
             @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음"),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 유저 관계")
     })
-    @PostMapping("/connect/{todakId}")
+    @PostMapping("/connect/todak")
     public ResponseEntity<Void> connect(
-            @PathVariable Long todakId,
+            @AuthenticationPrincipal Long userId,
             @RequestBody UserRelationConnectRequest request
     ) {
-        relationService.connectByCode(todakId, request.code());
+        relationService.connectByCode(userId, request.code());
         return ResponseEntity.ok().build();
     }
 }

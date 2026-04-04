@@ -4,6 +4,7 @@ import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
+import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateWithRelationRequest;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
@@ -28,6 +29,7 @@ public class StickerBoardService {
     private final MissionRepository missionRepository;
     private final UserRelationRepository userRelationRepository;
     private final UserRepository userRepository;
+    private final RelationService relationService;
 
     @Transactional
     public Long createStickerBoard(Long todakId, StickerBoardCreateWithRelationRequest request) {
@@ -35,7 +37,7 @@ public class StickerBoardService {
         validateTodakRole(todak);
 
         UserRelation relation = findRelationById(request.relationId());
-        validateRelationOwner(todak, relation);
+        relationService.validateRelation(todak, relation);
 
         StickerBoard stickerBoard = saveStickerBoard(relation, request);
         saveMissions(stickerBoard, request.missions());
@@ -71,12 +73,6 @@ public class StickerBoardService {
     private void validateTodakRole(User user) {
         if (!user.getRole().equals(Role.TODAK)) {
             throw new RelationException(ErrorCode.ROLE_MISMATCH);
-        }
-    }
-
-    private void validateRelationOwner(User todak, UserRelation relation) {
-        if (!relation.getTodak().equals(todak)) {
-            throw new RelationException(ErrorCode.RELATION_TODAK_MISMATCH);
         }
     }
 

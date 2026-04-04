@@ -72,8 +72,8 @@ public class RelationService {
         }
     }
 
-    private void validateRelation(User todak, UserRelation relation) {
-        if (relation.getTodak() != todak) {
+    public void validateRelation(User todak, UserRelation relation) {
+        if (!relation.isOwnedByTodak(todak)) {
             throw new RelationException(ErrorCode.RELATION_TODAK_MISMATCH);
         }
     }

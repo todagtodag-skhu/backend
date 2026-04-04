@@ -1,7 +1,8 @@
 package kr.omong.todagtodag.domain.relation.service;
 
-import jakarta.transaction.Transactional;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationGetResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.model.InviteCodeGenerator;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
@@ -14,6 +15,9 @@ import kr.omong.todagtodag.domain.user.repository.UserRepository;
 import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,6 +68,19 @@ public class RelationService {
                 request.name(),
                 request.birthday()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public UserRelationListGetResponse getRelations(Long todakId) {
+        User todak = getUserById(todakId);
+        validateRole(todak, Role.TODAK);
+
+        List<UserRelationGetResponse> relations = userRelationRepository.findAllByTodak(todak)
+                .stream()
+                .map(r -> new UserRelationGetResponse(r.getId(), r.getSungjangName()))
+                .toList();
+
+        return new UserRelationListGetResponse(relations);
     }
 
     private void validateRole(User user, Role role) {

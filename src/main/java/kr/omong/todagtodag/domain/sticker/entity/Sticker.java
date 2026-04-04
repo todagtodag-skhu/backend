@@ -34,6 +34,9 @@ public class Sticker {
     private StickerBoard stickerBoard;
 
     @Column(nullable = false)
+    private int position;
+
+    @Column(nullable = false)
     private LocalDate date;
 
     @Column(nullable = false)

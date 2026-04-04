@@ -14,9 +14,9 @@ import java.util.Date;
 import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
 import kr.omong.todagtodag.domain.auth.config.JwtProperties;
-import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.user.entity.User;
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class JwtTokenProvider {
             signedJWT.sign(new MACSigner(secretKey()));
             return signedJWT.serialize();
         } catch (JOSEException exception) {
-            throw new AuthException(AuthErrorCode.ACCESS_TOKEN_INVALID, exception);
+            throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID, exception);
         }
     }
 
@@ -62,7 +62,7 @@ public class JwtTokenProvider {
                     List.of(new SimpleGrantedAuthority("ROLE_" + role))
             );
         } catch (ParseException exception) {
-            throw new AuthException(AuthErrorCode.ACCESS_TOKEN_INVALID, exception);
+            throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID, exception);
         }
     }
 
@@ -76,17 +76,17 @@ public class JwtTokenProvider {
             SignedJWT signedJWT = SignedJWT.parse(token);
             boolean verified = signedJWT.verify(new MACVerifier(secretKey().getEncoded()));
             if (!verified) {
-                throw new AuthException(AuthErrorCode.ACCESS_TOKEN_INVALID);
+                throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID);
             }
 
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
             Date expirationTime = claims.getExpirationTime();
             if (expirationTime == null || expirationTime.toInstant().isBefore(Instant.now())) {
-                throw new AuthException(AuthErrorCode.ACCESS_TOKEN_EXPIRED);
+                throw new AuthException(ErrorCode.ACCESS_TOKEN_EXPIRED);
             }
             return claims;
         } catch (ParseException | JOSEException exception) {
-            throw new AuthException(AuthErrorCode.ACCESS_TOKEN_INVALID, exception);
+            throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID, exception);
         }
     }
 

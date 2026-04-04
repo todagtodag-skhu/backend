@@ -13,8 +13,8 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.Date;
 import kr.omong.todagtodag.domain.auth.config.OAuthProperties;
-import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.OAuthVerificationException;
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -44,7 +44,7 @@ public class AppleClient implements OAuthTokenVerifier {
             JWKSet jwkSet = JWKSet.parse(fetchJwkSet());
             JWK jwk = jwkSet.getKeyByKeyId(keyId);
             if (!(jwk instanceof RSAKey rsaKey)) {
-                throw new OAuthVerificationException(AuthErrorCode.APPLE_JWK_NOT_FOUND);
+                throw new OAuthVerificationException(ErrorCode.APPLE_JWK_NOT_FOUND);
             }
 
             verifySignature(signedJWT, rsaKey);
@@ -59,7 +59,7 @@ public class AppleClient implements OAuthTokenVerifier {
         } catch (OAuthVerificationException exception) {
             throw exception;
         } catch (ParseException | RestClientException exception) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_INVALID, exception);
+            throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_INVALID, exception);
         }
     }
 
@@ -71,11 +71,11 @@ public class AppleClient implements OAuthTokenVerifier {
                     .body(String.class);
 
             if (body == null || body.isBlank()) {
-                throw new OAuthVerificationException(AuthErrorCode.APPLE_JWK_FETCH_FAILED);
+                throw new OAuthVerificationException(ErrorCode.APPLE_JWK_FETCH_FAILED);
             }
             return body;
         } catch (RestClientException exception) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_JWK_FETCH_FAILED, exception);
+            throw new OAuthVerificationException(ErrorCode.APPLE_JWK_FETCH_FAILED, exception);
         }
     }
 
@@ -84,24 +84,24 @@ public class AppleClient implements OAuthTokenVerifier {
             JWSVerifier verifier = new RSASSAVerifier(rsaKey.toRSAPublicKey());
             boolean verified = signedJWT.verify(verifier);
             if (!verified) {
-                throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_INVALID);
+                throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_INVALID);
             }
         } catch (JOSEException exception) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_INVALID, exception);
+            throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_INVALID, exception);
         }
     }
 
     private void validateClaims(JWTClaimsSet claims) {
         if (!APPLE_ISSUER.equals(claims.getIssuer())) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_ISSUER_INVALID);
+            throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_ISSUER_INVALID);
         }
         if (!claims.getAudience().contains(oAuthProperties.clientId())) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_AUDIENCE_INVALID);
+            throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_AUDIENCE_INVALID);
         }
 
         Date expirationTime = claims.getExpirationTime();
         if (expirationTime == null || expirationTime.toInstant().isBefore(Instant.now())) {
-            throw new OAuthVerificationException(AuthErrorCode.APPLE_ID_TOKEN_EXPIRED);
+            throw new OAuthVerificationException(ErrorCode.APPLE_ID_TOKEN_EXPIRED);
         }
     }
 }

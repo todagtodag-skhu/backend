@@ -1,7 +1,6 @@
 package kr.omong.todagtodag.domain.user.service;
 
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
-import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
@@ -12,6 +11,7 @@ import kr.omong.todagtodag.domain.user.entity.SungjangProfile;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.SungjangProfileRepository;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ public class UserService {
     @Transactional
     public User getById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
@@ -71,10 +71,10 @@ public class UserService {
     private User updateRoleForPendingUser(Long userId, Role role) {
         User user = getById(userId);
         if (!role.isSelectableForOnboarding()) {
-            throw new AuthException(AuthErrorCode.INVALID_ONBOARDING_ROLE);
+            throw new AuthException(ErrorCode.INVALID_ONBOARDING_ROLE);
         }
         if (user.getRole() != Role.PENDING) {
-            throw new AuthException(AuthErrorCode.ONBOARDING_ALREADY_COMPLETED);
+            throw new AuthException(ErrorCode.ONBOARDING_ALREADY_COMPLETED);
         }
         user.updateRole(role);
         return user;

@@ -1,19 +1,17 @@
 package kr.omong.todagtodag.domain.relation.service;
 
 import jakarta.transaction.Transactional;
-import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.model.InviteCodeGenerator;
+import kr.omong.todagtodag.domain.relation.model.InviteCodeGenerator;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
-import kr.omong.todagtodag.domain.relation.exception.RelationErrorCode;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.InviteCodeRepository;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,12 +39,12 @@ public class RelationService {
         validateRole(todak, Role.TODAK);
 
         Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
-                .orElseThrow(() -> new RelationException(RelationErrorCode.INVALID_INVITE_CODE));
+                .orElseThrow(() -> new RelationException(ErrorCode.INVALID_INVITE_CODE));
 
         User sungjang = getUserById(sungjangId);
 
         if (userRelationRepository.existsByTodakIdAndSungjangId(todakId, sungjangId)) {
-            throw new RelationException(RelationErrorCode.RELATION_ALREADY_EXISTS);
+            throw new RelationException(ErrorCode.RELATION_ALREADY_EXISTS);
         }
 
         inviteCodeRepository.delete(code);
@@ -70,7 +68,7 @@ public class RelationService {
 
     private void validateRole(User user, Role role) {
         if (!user.getRole().equals(role)) {
-            throw new RelationException(RelationErrorCode.ROLE_MISMATCH);
+            throw new RelationException(ErrorCode.ROLE_MISMATCH);
         }
     }
 
@@ -82,7 +80,7 @@ public class RelationService {
 
     private User getUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
     }
 
     private UserRelation getRelationById(Long relationId) {

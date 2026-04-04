@@ -1,4 +1,4 @@
-package kr.omong.todagtodag.domain.model;
+package kr.omong.todagtodag.domain.relation.model;
 
 import org.springframework.stereotype.Component;
 

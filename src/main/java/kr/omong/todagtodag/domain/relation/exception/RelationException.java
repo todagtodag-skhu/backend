@@ -1,20 +1,21 @@
 package kr.omong.todagtodag.domain.relation.exception;
 
+import kr.omong.todagtodag.global.exception.ErrorCode;
+import lombok.Getter;
+
+@Getter
 public class RelationException extends RuntimeException {
 
-    private final RelationErrorCode relationErrorCode;
+    private final ErrorCode errorCode;
 
-    public RelationException(RelationErrorCode errorCode) {
+    public RelationException(ErrorCode errorCode) {
         super(errorCode.getMessage());
-        this.relationErrorCode = errorCode;
+        this.errorCode = errorCode;
     }
 
-    public RelationException(RelationErrorCode errorCode, Throwable cause) {
+    public RelationException(ErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
-        this.relationErrorCode = errorCode;
+        this.errorCode = errorCode;
     }
 
-    public RelationErrorCode getRelationErrorCode() {
-        return relationErrorCode;
-    }
 }

@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/sticker-board")
+@RequestMapping("/todak/sticker-board")
 @RequiredArgsConstructor
-@Tag(name = "스티커판 API", description = "스티커판 생성 및 관리")
-public class StickerBoardController {
+@Tag(name = "토닥이 스티커판 API", description = "토닥이의 스티커판 생성 및 관리")
+public class TodakStickerBoardController {
 
     private final StickerBoardService stickerBoardService;
 

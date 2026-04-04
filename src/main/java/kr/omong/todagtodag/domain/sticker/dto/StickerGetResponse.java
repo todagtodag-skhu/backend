@@ -6,7 +6,6 @@ public record StickerGetResponse(
         Long stickerId,
         int position,
         LocalDate date,
-        String content,
-        String missionName
+        String content
 ) {
 }

@@ -117,8 +117,7 @@ public class StickerBoardService {
                         s.getId(),
                         s.getPosition(),
                         s.getDate(),
-                        s.getContent(),
-                        s.getMissionName()
+                        s.getContent()
                 ))
                 .toList();
 

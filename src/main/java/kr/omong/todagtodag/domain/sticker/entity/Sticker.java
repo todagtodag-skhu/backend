@@ -41,7 +41,4 @@ public class Sticker {
 
     @Column(nullable = false)
     private String content;
-
-    @Column(nullable = false)
-    private String missionName;
 }

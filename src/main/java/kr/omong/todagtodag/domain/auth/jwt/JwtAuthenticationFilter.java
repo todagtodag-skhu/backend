@@ -5,8 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import kr.omong.todagtodag.domain.auth.exception.AuthErrorCode;
+
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(authorization)) {
             if (!authorization.startsWith(BEARER_PREFIX)) {
-                throw new AuthException(AuthErrorCode.INVALID_AUTHORIZATION_HEADER);
+                throw new AuthException(ErrorCode.INVALID_AUTHORIZATION_HEADER);
             }
             String token = authorization.substring(BEARER_PREFIX.length());
             JwtAuthentication authentication = jwtTokenProvider.getAuthentication(token);

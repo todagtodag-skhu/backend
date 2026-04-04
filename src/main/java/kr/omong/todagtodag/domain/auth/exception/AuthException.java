@@ -1,18 +1,19 @@
 package kr.omong.todagtodag.domain.auth.exception;
 
+import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.Getter;
 
 @Getter
 public class AuthException extends RuntimeException {
 
-    private final AuthErrorCode errorCode;
+    private final ErrorCode errorCode;
 
-    public AuthException(AuthErrorCode errorCode) {
+    public AuthException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 
-    public AuthException(AuthErrorCode errorCode, Throwable cause) {
+    public AuthException(ErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }

@@ -7,6 +7,8 @@ import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateWithRelationRequest;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
@@ -45,6 +47,17 @@ public class StickerBoardService {
         return stickerBoard.getId();
     }
 
+    @Transactional(readOnly = true)
+    public StickerBoardGetResponse getStickerBoard(Long sungjangId, Long stickerBoardId) {
+        User sungjang = findUserById(sungjangId);
+        validateSungjangRole(sungjang);
+
+        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
+        validateSungjangInRelation(sungjang, stickerBoard);
+
+        return toResponse(stickerBoard);
+    }
+
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateWithRelationRequest request) {
         return stickerBoardRepository.save(
                 StickerBoard.builder()
@@ -76,6 +89,12 @@ public class StickerBoardService {
         }
     }
 
+    private void validateSungjangRole(User user) {
+        if (!user.getRole().equals(Role.SUNGJANG)) {
+            throw new RelationException(ErrorCode.ROLE_MISMATCH);
+        }
+    }
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
@@ -83,6 +102,38 @@ public class StickerBoardService {
 
     private UserRelation findRelationById(Long relationId) {
         return userRelationRepository.findById(relationId)
+                .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
+    }
+
+    private void validateSungjangInRelation(User sungjang, StickerBoard stickerBoard) {
+        if (!stickerBoard.getUserRelation().getSungjang().equals(sungjang)) {
+            throw new RelationException(ErrorCode.RELATION_TODAK_MISMATCH);
+        }
+    }
+
+    private StickerBoardGetResponse toResponse(StickerBoard stickerBoard) {
+        List<StickerGetResponse> stickers = stickerBoard.getStickers().stream()
+                .map(s -> new StickerGetResponse(
+                        s.getId(),
+                        s.getPosition(),
+                        s.getDate(),
+                        s.getContent(),
+                        s.getMissionName()
+                ))
+                .toList();
+
+        return new StickerBoardGetResponse(
+                stickerBoard.getId(),
+                stickerBoard.getName(),
+                stickerBoard.getStickerCount(),
+                stickerBoard.getBoardDesign(),
+                stickerBoard.getFinalReward(),
+                stickers
+        );
+    }
+
+    private StickerBoard findStickerBoardById(Long stickerBoardId) {
+        return stickerBoardRepository.findById(stickerBoardId)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 }

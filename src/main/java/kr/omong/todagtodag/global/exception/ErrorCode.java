@@ -27,7 +27,10 @@ public enum ErrorCode {
     INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 초대 코드입니다."),
     RELATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 연결된 관계입니다."),
     RELATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 연결 관계입니다."),
-    RELATION_TODAK_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 토닥이가 아닙니다.");
+    RELATION_TODAK_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 토닥이가 아닙니다."),
+
+    // Sticker
+    STICKER_BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스티커판입니다.");
 
     private final HttpStatus status;
     private final String message;

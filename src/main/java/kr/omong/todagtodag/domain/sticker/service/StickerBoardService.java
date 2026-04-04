@@ -5,9 +5,12 @@ import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
+import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateWithRelationRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
@@ -56,6 +59,18 @@ public class StickerBoardService {
         validateSungjangInRelation(sungjang, stickerBoard);
 
         return toResponse(stickerBoard);
+    }
+
+    @Transactional(readOnly = true)
+    public StickerBoardTodakGetResponse getStickerBoardByRelationId(Long todakId, Long relationId) {
+        User todak = findUserById(todakId);
+        validateTodakRole(todak);
+
+        UserRelation relation = findRelationById(relationId);
+        relationService.validateRelation(todak, relation);
+
+        StickerBoard stickerBoard = findStickerBoardByRelation(relation);
+        return toTodakResponse(stickerBoard);
     }
 
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateWithRelationRequest request) {
@@ -134,5 +149,34 @@ public class StickerBoardService {
     private StickerBoard findStickerBoardById(Long stickerBoardId) {
         return stickerBoardRepository.findById(stickerBoardId)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
+    }
+
+    private StickerBoard findStickerBoardByRelation(UserRelation relation) {
+        return stickerBoardRepository.findByUserRelation(relation)
+                .orElseThrow(() -> new StickerBoardException(ErrorCode.STICKER_BOARD_NOT_FOUND));
+    }
+
+    private StickerBoardTodakGetResponse toTodakResponse(StickerBoard stickerBoard) {
+        String remainingStickerCount = stickerBoard.getStickers().size()
+                + "/" + stickerBoard.getStickerCount().getValue();
+
+        List<MissionGetResponse> missions = stickerBoard.getMissions().stream()
+                .map(m -> new MissionGetResponse(
+                        m.getId(),
+                        m.getName(),
+                        m.getDays(),
+                        m.getDailyCount(),
+                        m.getRewardStickerCount()
+                ))
+                .toList();
+
+        return new StickerBoardTodakGetResponse(
+                stickerBoard.getId(),
+                stickerBoard.getName(),
+                remainingStickerCount,
+                stickerBoard.getBoardDesign(),
+                stickerBoard.getFinalReward(),
+                missions
+        );
     }
 }

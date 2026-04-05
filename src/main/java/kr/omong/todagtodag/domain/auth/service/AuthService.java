@@ -37,13 +37,9 @@ public class AuthService {
         }
 
         for (UserRelation relation : relations) {
-            Long sungjangId = relation.getSungjang().getId();
-
-            User sungjang = userRepository.findById(sungjangId)
-                    .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
-
+            User sungjang = relation.getSungjang();
             userRelationRepository.delete(relation);
-            sungjangProfileRepository.deleteByUserId(sungjangId);
+            sungjangProfileRepository.deleteByUserId(sungjang.getId());
             userRepository.delete(sungjang);
         }
 

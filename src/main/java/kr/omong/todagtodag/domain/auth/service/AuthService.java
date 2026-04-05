@@ -10,6 +10,7 @@ import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.SungjangProfileRepository;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,26 +25,28 @@ public class AuthService {
 
     @Transactional
     public void withdraw(Long userId) {
-        User requester = userRepository.findById(userId)
+        User todak = userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
-        if (requester.getRole() == Role.SUNGJANG) {
+        if (todak.getRole() == Role.SUNGJANG) {
             throw new AuthException(AuthErrorCode.WITHDRAW_FORBIDDEN_ROLE);
         }
 
-        UserRelation relation = userRelationRepository.findByTodakId(userId)
-                .orElseThrow(() -> new RelationException(RelationErrorCode.RELATION_NOT_FOUND));
+        List<UserRelation> relations = userRelationRepository.findAllByTodakId(userId);
+        if (relations.isEmpty()) {
+            throw new RelationException(RelationErrorCode.RELATION_NOT_FOUND);
+        }
 
-        Long todakId = relation.getTodak().getId();
-        Long sungjangId = relation.getSungjang().getId();
+        for (UserRelation relation : relations) {
+            Long sungjangId = relation.getSungjang().getId();
 
-        User todak = userRepository.findById(todakId)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
-        User sungjang = userRepository.findById(sungjangId)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
+            User sungjang = userRepository.findById(sungjangId)
+                    .orElseThrow(() -> new AuthException(AuthErrorCode.USER_NOT_FOUND));
 
-        userRelationRepository.delete(relation);
-        sungjangProfileRepository.deleteByUserId(sungjangId);
+            userRelationRepository.delete(relation);
+            sungjangProfileRepository.deleteByUserId(sungjangId);
+            userRepository.delete(sungjang);
+        }
+
         userRepository.delete(todak);
-        userRepository.delete(sungjang);
     }
 }

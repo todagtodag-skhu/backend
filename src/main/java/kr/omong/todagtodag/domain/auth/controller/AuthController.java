@@ -47,7 +47,6 @@ public class AuthController {
             @ApiResponse(responseCode = "502", description = "Apple 공개 키 조회 실패")
     })
     @PostMapping("/api/auth/login/{provider}")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<AuthResponse> socialLogin(
             @PathVariable SocialProvider provider,
             @RequestBody @Valid SocialLoginRequest request
@@ -87,7 +86,7 @@ public class AuthController {
                     
                     헤더에 accessToken을 담아 호출해야 합니다.
                     
-                    현재 로그인한 토닥이 유저를 기준으로 관계를 조회한 뒤, 연결된 토닥이와 성장이 계정을 모두 삭제합니다.
+                    현재 로그인한 토닥이 유저의 userId로 모든 관계를 조회한 뒤, 연결된 모든 성장이와 토닥이 계정을 함께 삭제합니다.
                     """
     )
     @ApiResponses({

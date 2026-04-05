@@ -55,4 +55,8 @@ public class UserRelation {
         this.sungjangName = name;
         this.sungjangBirthday = birthday;
     }
+
+    public boolean isOwnedByTodak(User todak) {
+        return this.todak.equals(todak);
+    }
 }

@@ -2,6 +2,7 @@ package kr.omong.todagtodag.global.exception;
 
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
+import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,6 +33,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RelationException.class)
     public ResponseEntity<Map<String, String>> handleRelationException(RelationException exception) {
+        return ResponseEntity.status(exception.getErrorCode().getStatus())
+                .body(Map.of(
+                        "code", exception.getErrorCode().name(),
+                        "message", exception.getErrorCode().getMessage()
+                ));
+    }
+
+    @ExceptionHandler(StickerBoardException.class)
+    public ResponseEntity<Map<String, String>> handleStickerBoardException(StickerBoardException exception) {
         return ResponseEntity.status(exception.getErrorCode().getStatus())
                 .body(Map.of(
                         "code", exception.getErrorCode().name(),

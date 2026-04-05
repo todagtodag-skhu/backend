@@ -7,11 +7,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectRequest;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -105,5 +107,30 @@ public class RelationController {
             ) {
         relationService.updateSungjangInfoByRelationId(userId, relationId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "토닥이 - 관계 목록 조회",
+            description =
+                    """
+                    토닥이 유저가 소속된 관계 목록을 조회합니다.
+                    
+                    헤더에 토닥이 유저의 accessToken을 담아 호출해야 합니다.
+                    
+                    관계 id와 성장이 이름 리스트를 반환합니다.
+                    
+                    성장이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "관계 목록 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토닥이 유저로 요청하지 않음"),
+            @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음")
+    })
+    @GetMapping("/todak")
+    public ResponseEntity<UserRelationListGetResponse> getRelations(
+            @AuthenticationPrincipal Long userId
+    ) {
+        return ResponseEntity.ok(relationService.getRelations(userId));
     }
 }

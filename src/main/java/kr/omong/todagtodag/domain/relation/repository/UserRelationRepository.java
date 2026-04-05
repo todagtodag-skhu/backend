@@ -1,17 +1,15 @@
 package kr.omong.todagtodag.domain.relation.repository;
 
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
+import kr.omong.todagtodag.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserRelationRepository extends JpaRepository<UserRelation, Long> {
     boolean existsByTodakIdAndSungjangId(Long toakId, Long sungjangId);
 
     List<UserRelation> findAllByTodakId(Long todakId);
 
-    Optional<UserRelation> findBySungjangId(Long sungjangId);
-
-    void deleteAllByTodakIdOrSungjangId(Long todakId, Long sungjangId);
+    List<UserRelation> findAllByTodak(User todak);
 }

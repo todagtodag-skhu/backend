@@ -1,10 +1,12 @@
-package kr.omong.todagtodag.domain.auth.exception;
+package kr.omong.todagtodag.global.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum AuthErrorCode {
+public enum ErrorCode {
+
+    // Auth
     APPLE_ID_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Apple 로그인 토큰 서명이 유효하지 않습니다."),
     APPLE_ID_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Apple 로그인 토큰이 만료되었습니다."),
     APPLE_ID_TOKEN_ISSUER_INVALID(HttpStatus.UNAUTHORIZED, "Apple 로그인 토큰의 issuer가 유효하지 않습니다."),
@@ -18,14 +20,20 @@ public enum AuthErrorCode {
     WITHDRAW_FORBIDDEN_ROLE(HttpStatus.FORBIDDEN, "성장이 유저는 회원 탈퇴를 요청할 수 없습니다."),
     INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "Authorization 헤더 형식이 올바르지 않습니다."),
     ACCESS_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Access Token이 유효하지 않습니다."),
-    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access Token이 만료되었습니다.");
+    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access Token이 만료되었습니다."),
+
+    // Relation
+    ROLE_MISMATCH(HttpStatus.FORBIDDEN, "해당 역할로 수행할 수 없는 작업입니다."),
+    INVALID_INVITE_CODE(HttpStatus.BAD_REQUEST, "유효하지 않은 초대 코드입니다."),
+    RELATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 연결된 관계입니다."),
+    RELATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 연결 관계입니다."),
+    RELATION_TODAK_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 토닥이가 아닙니다.");
 
     private final HttpStatus status;
     private final String message;
 
-    AuthErrorCode(HttpStatus status, String message) {
+    ErrorCode(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }
-
 }

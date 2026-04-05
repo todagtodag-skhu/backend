@@ -74,7 +74,7 @@ public class RelationService {
 
     private void validateRelation(User todak, UserRelation relation) {
         if (relation.getTodak() != todak) {
-            throw new RelationException(RelationErrorCode.RELATION_TODAK_MISMATCH);
+            throw new RelationException(ErrorCode.RELATION_TODAK_MISMATCH);
         }
     }
 
@@ -85,6 +85,6 @@ public class RelationService {
 
     private UserRelation getRelationById(Long relationId) {
         return userRelationRepository.findById(relationId)
-                .orElseThrow(() -> new RelationException(RelationErrorCode.RELATION_NOT_FOUND));
+                .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 }

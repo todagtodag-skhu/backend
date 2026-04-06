@@ -10,6 +10,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import java.text.ParseException;
 import java.time.Instant;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import javax.crypto.spec.SecretKeySpec;
@@ -25,14 +27,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    private static final int REFRESH_TOKEN_BYTE_LENGTH = 32;
+
     private final JwtProperties jwtProperties;
+    private final SecureRandom secureRandom = new SecureRandom();
 
     public String createAccessToken(User user) {
         Instant now = Instant.now();
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(String.valueOf(user.getId()))
                 .issueTime(Date.from(now))
-                .expirationTime(Date.from(now.plusSeconds(jwtProperties.accessTokenExpirationMillSecond())))
+                .expirationTime(Date.from(now.plusMillis(jwtProperties.accessTokenExpirationMillSecond())))
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().name())
                 .build();
@@ -50,6 +55,12 @@ public class JwtTokenProvider {
         } catch (JOSEException exception) {
             throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID, exception);
         }
+    }
+
+    public String createRefreshToken() {
+        byte[] randomBytes = new byte[REFRESH_TOKEN_BYTE_LENGTH];
+        secureRandom.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
     public JwtAuthentication getAuthentication(String token) {

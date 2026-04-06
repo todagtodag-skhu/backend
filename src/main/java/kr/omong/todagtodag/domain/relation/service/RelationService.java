@@ -57,6 +57,7 @@ public class RelationService {
         return relation.getId();
     }
 
+    @Transactional
     public void updateSungjangInfoByRelationId(Long todakId, Long relationId, UserRelationUpdateSungjangInfoRequest request) {
         User todak = getUserById(todakId);
         UserRelation relation = getRelationById(relationId);

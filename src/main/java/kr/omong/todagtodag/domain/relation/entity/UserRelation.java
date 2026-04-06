@@ -57,6 +57,6 @@ public class UserRelation {
     }
 
     public boolean isOwnedByTodak(User todak) {
-        return this.todak.equals(todak);
+        return this.todak.getId().equals(todak.getId());
     }
 }

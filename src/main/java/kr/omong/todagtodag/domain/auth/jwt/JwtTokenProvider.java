@@ -8,12 +8,10 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import java.text.ParseException;
 import java.time.Instant;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.text.ParseException;
 import javax.crypto.spec.SecretKeySpec;
 import kr.omong.todagtodag.domain.auth.config.JwtProperties;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
@@ -27,10 +25,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private static final int REFRESH_TOKEN_BYTE_LENGTH = 32;
-
     private final JwtProperties jwtProperties;
-    private final SecureRandom secureRandom = new SecureRandom();
 
     public String createAccessToken(User user) {
         Instant now = Instant.now();
@@ -55,12 +50,6 @@ public class JwtTokenProvider {
         } catch (JOSEException exception) {
             throw new AuthException(ErrorCode.ACCESS_TOKEN_INVALID, exception);
         }
-    }
-
-    public String createRefreshToken() {
-        byte[] randomBytes = new byte[REFRESH_TOKEN_BYTE_LENGTH];
-        secureRandom.nextBytes(randomBytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
     public JwtAuthentication getAuthentication(String token) {

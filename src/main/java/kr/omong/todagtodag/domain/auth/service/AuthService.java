@@ -2,6 +2,7 @@ package kr.omong.todagtodag.domain.auth.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 import kr.omong.todagtodag.domain.auth.config.JwtProperties;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.entity.RefreshToken;
@@ -15,7 +16,6 @@ import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.SungjangProfileRepository;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
-import java.util.List;
 import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,25 +30,25 @@ public class AuthService {
     private final UserRelationRepository userRelationRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenGenerator refreshTokenGenerator;
     private final JwtProperties jwtProperties;
 
     @Transactional
     public AuthResponse issueTokens(User user, boolean isNewUser) {
         LocalDateTime now = LocalDateTime.now();
         String accessToken = jwtTokenProvider.createAccessToken(user);
-        String refreshTokenValue = jwtTokenProvider.createRefreshToken();
+        String refreshTokenValue = refreshTokenGenerator.createRefreshToken();
         LocalDateTime expiryDate = now.plus(Duration.ofMillis(jwtProperties.refreshTokenExpirationMillSecond()));
 
-        refreshTokenRepository.findByUser(user)
-                .ifPresentOrElse(
-                        refreshToken -> refreshToken.rotate(refreshTokenValue, expiryDate, now),
-                        () -> refreshTokenRepository.save(RefreshToken.builder()
-                                .user(user)
-                                .token(refreshTokenValue)
-                                .expiryDate(expiryDate)
-                                .createdAt(now)
-                                .build())
-                );
+        revokeActiveTokens(user);
+        refreshTokenRepository.save(RefreshToken.builder()
+                .user(user)
+                .token(refreshTokenValue)
+                .revoked(false)
+                .deviceId(null)
+                .expiryDate(expiryDate)
+                .createdAt(now)
+                .build());
 
         return AuthResponse.builder()
                 .isNewUser(isNewUser)
@@ -63,18 +63,22 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(requestToken)
                 .orElseThrow(() -> new AuthException(ErrorCode.REFRESH_TOKEN_INVALID));
 
+        if (refreshToken.isRevoked()) {
+            throw new AuthException(ErrorCode.REFRESH_TOKEN_REVOKED);
+        }
         if (refreshToken.isExpired(LocalDateTime.now())) {
-            refreshTokenRepository.deleteByUser(refreshToken.getUser());
+            refreshToken.revoke();
             throw new AuthException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
 
+        refreshToken.revoke();
         return issueTokens(refreshToken.getUser(), false);
     }
 
     @Transactional
     public void logout(Long userId) {
         User user = getAuthenticatedUser(userId);
-        refreshTokenRepository.deleteByUser(user);
+        refreshTokenRepository.deleteAllByUser(user);
     }
 
     @Transactional
@@ -97,6 +101,11 @@ public class AuthService {
         }
 
         userRepository.delete(todak);
+    }
+
+    private void revokeActiveTokens(User user) {
+        refreshTokenRepository.findAllByUserAndRevokedFalse(user)
+                .forEach(RefreshToken::revoke);
     }
 
     private User getAuthenticatedUser(Long userId) {

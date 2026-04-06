@@ -6,7 +6,6 @@ import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
-import kr.omong.todagtodag.domain.user.repository.SungjangProfileRepository;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final SungjangProfileRepository sungjangProfileRepository;
     private final UserRelationRepository userRelationRepository;
 
     @Transactional
@@ -39,7 +37,6 @@ public class AuthService {
         for (UserRelation relation : relations) {
             User sungjang = relation.getSungjang();
             userRelationRepository.delete(relation);
-            sungjangProfileRepository.deleteByUserId(sungjang.getId());
             userRepository.delete(sungjang);
         }
 

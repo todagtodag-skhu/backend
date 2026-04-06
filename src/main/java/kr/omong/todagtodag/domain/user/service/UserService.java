@@ -4,12 +4,9 @@ import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
-import kr.omong.todagtodag.domain.user.dto.SungjangOnboardingRequest;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
 import kr.omong.todagtodag.domain.user.entity.Role;
-import kr.omong.todagtodag.domain.user.entity.SungjangProfile;
 import kr.omong.todagtodag.domain.user.entity.User;
-import kr.omong.todagtodag.domain.user.repository.SungjangProfileRepository;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
 import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +19,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RelationService relationService;
-    private final SungjangProfileRepository sungjangProfileRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -54,19 +50,19 @@ public class UserService {
         return buildAuthResponse(user);
     }
 
-    @Transactional
-    public AuthResponse onboardSungjang(Long userId, SungjangOnboardingRequest request) {
-        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
-        sungjangProfileRepository.save(
-                SungjangProfile.builder()
-                        .userId(userId)
-                        .growthName(request.growthName())
-                        .stickerBoardType(request.stickerBoardType())
-                        .birthday(request.birthday())
-                        .build()
-        );
-        return buildAuthResponse(user);
-    }
+//    @Transactional
+//    public AuthResponse onboardSungjang(Long userId, SungjangOnboardingRequest request) {
+//        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
+//        sungjangProfileRepository.save(
+//                SungjangProfile.builder()
+//                        .userId(userId)
+//                        .growthName(request.growthName())
+//                        .stickerBoardType(request.stickerBoardType())
+//                        .birthday(request.birthday())
+//                        .build()
+//        );
+//        return buildAuthResponse(user);
+//    }
 
     private User updateRoleForPendingUser(Long userId, Role role) {
         User user = getById(userId);

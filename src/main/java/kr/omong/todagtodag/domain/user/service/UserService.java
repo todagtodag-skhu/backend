@@ -1,8 +1,8 @@
 package kr.omong.todagtodag.domain.user.service;
 
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
+import kr.omong.todagtodag.domain.auth.service.AuthService;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.user.dto.SungjangOnboardingRequest;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
@@ -23,7 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RelationService relationService;
     private final SungjangProfileRepository sungjangProfileRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
     @Transactional
     public User createAppleUser(String providerId) {
@@ -81,10 +81,6 @@ public class UserService {
     }
 
     private AuthResponse buildAuthResponse(User user) {
-        return AuthResponse.builder()
-                .isNewUser(false)
-                .accessToken(jwtTokenProvider.createAccessToken(user))
-                .role(user.getRole())
-                .build();
+        return authService.issueTokens(user, false);
     }
 }

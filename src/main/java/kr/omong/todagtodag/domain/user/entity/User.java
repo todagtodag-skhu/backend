@@ -29,18 +29,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String providerId;
 
-    @Column(unique = true)
-    private String inviteCode;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(20)")
     private Role role;
 
     public void updateRole(Role role) {
         this.role = role;
-    }
-
-    public void updateInviteCode(String inviteCode) {
-        this.inviteCode = inviteCode;
     }
 }

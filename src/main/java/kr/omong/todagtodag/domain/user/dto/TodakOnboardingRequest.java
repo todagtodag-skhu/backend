@@ -11,10 +11,10 @@ public record TodakOnboardingRequest(
         String inviteCode,
 
         @NotBlank
-        String childName,
+        String sungjangName,
 
         @NotNull
         @JsonFormat(pattern = "yyyy.MM.dd")
-        LocalDate childBirthday
+        LocalDate sungjangBirthday
 ) {
 }

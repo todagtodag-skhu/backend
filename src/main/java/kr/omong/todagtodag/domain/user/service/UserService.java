@@ -56,11 +56,6 @@ public class UserService {
         return buildAuthResponse(user);
     }
 
-    @Transactional
-    public Long createTodakRelation(Long userId, TodakOnboardingRequest request) {
-        return createRelation(userId, request);
-    }
-
     private User updateRoleForPendingUser(Long userId, Role role) {
         User user = getById(userId);
         if (!role.isSelectableForOnboarding()) {
@@ -77,8 +72,8 @@ public class UserService {
         return relationService.connectByCode(
                 userId,
                 request.inviteCode(),
-                request.childName(),
-                request.childBirthday()
+                request.sungjangName(),
+                request.sungjangBirthday()
         );
     }
 

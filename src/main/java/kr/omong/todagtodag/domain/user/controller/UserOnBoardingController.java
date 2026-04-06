@@ -34,15 +34,14 @@ public class UserOnBoardingController {
         return ResponseEntity.ok(userService.onboardTodak(userId, request));
     }
 
-//    @Operation(
-//            summary = "성장이 온보딩",
-//            description = "PENDING 권한의 access token으로 호출합니다. 성장이 이름, 스티커판 종류, 생일을 저장하고 역할을 SUNGJANG으로 변경합니다."
-//    )
-//    @PostMapping("/onboarding/sungjang")
-//    public ResponseEntity<AuthResponse> onboardSungjang(
-//            @AuthenticationPrincipal Long userId,
-//            @Valid @RequestBody SungjangOnboardingRequest request
-//    ) {
-//        return ResponseEntity.ok(userService.onboardSungjang(userId, request));
-//    }
+    @Operation(
+            summary = "성장이 온보딩",
+            description = "PENDING 권한의 access token으로 호출합니다. 별도 프로필 저장 없이 역할을 SUNGJANG으로 변경합니다."
+    )
+    @PostMapping("/onboarding/sungjang")
+    public ResponseEntity<AuthResponse> onboardSungjang(
+            @AuthenticationPrincipal Long userId
+    ) {
+        return ResponseEntity.ok(userService.onboardSungjang(userId));
+    }
 }

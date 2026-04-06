@@ -45,24 +45,21 @@ public class UserService {
 
     @Transactional
     public AuthResponse onboardTodak(Long userId, TodakOnboardingRequest request) {
-        User user = updateRoleForPendingUser(userId, Role.TODAK);
-        relationService.connectByCode(userId, request.inviteCode());
+        User user = getById(userId);
+        createRelation(userId, request);
         return buildAuthResponse(user);
     }
 
-//    @Transactional
-//    public AuthResponse onboardSungjang(Long userId, SungjangOnboardingRequest request) {
-//        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
-//        sungjangProfileRepository.save(
-//                SungjangProfile.builder()
-//                        .userId(userId)
-//                        .growthName(request.growthName())
-//                        .stickerBoardType(request.stickerBoardType())
-//                        .birthday(request.birthday())
-//                        .build()
-//        );
-//        return buildAuthResponse(user);
-//    }
+    @Transactional
+    public AuthResponse onboardSungjang(Long userId) {
+        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
+        return buildAuthResponse(user);
+    }
+
+    @Transactional
+    public Long createTodakRelation(Long userId, TodakOnboardingRequest request) {
+        return createRelation(userId, request);
+    }
 
     private User updateRoleForPendingUser(Long userId, Role role) {
         User user = getById(userId);
@@ -74,6 +71,15 @@ public class UserService {
         }
         user.updateRole(role);
         return user;
+    }
+
+    private Long createRelation(Long userId, TodakOnboardingRequest request) {
+        return relationService.connectByCode(
+                userId,
+                request.inviteCode(),
+                request.childName(),
+                request.childBirthday()
+        );
     }
 
     private AuthResponse buildAuthResponse(User user) {

@@ -16,7 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -41,19 +41,21 @@ public class UserRelation {
     @JoinColumn(name = "sungjang_id", nullable = false)
     private User sungjang;
 
-    private String sungjangName;
-    private Date sungjangBirthday;
+    private String childName;
+    private LocalDate childBirthday;
 
-    public static UserRelation of(User todak, User sungjang) {
+    public static UserRelation of(User todak, User sungjang, String childName, LocalDate childBirthday) {
         return UserRelation.builder()
                 .todak(todak)
                 .sungjang(sungjang)
+                .childName(childName)
+                .childBirthday(childBirthday)
                 .build();
     }
 
-    public void updateSungjangInfo(String name, Date birthday) {
-        this.sungjangName = name;
-        this.sungjangBirthday = birthday;
+    public void updateChildInfo(String childName, LocalDate childBirthday) {
+        this.childName = childName;
+        this.childBirthday = childBirthday;
     }
 
     public boolean isOwnedByTodak(User todak) {

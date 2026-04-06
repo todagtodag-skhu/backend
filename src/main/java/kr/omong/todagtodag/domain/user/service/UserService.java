@@ -50,20 +50,6 @@ public class UserService {
         return buildAuthResponse(user);
     }
 
-//    @Transactional
-//    public AuthResponse onboardSungjang(Long userId, SungjangOnboardingRequest request) {
-//        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
-//        sungjangProfileRepository.save(
-//                SungjangProfile.builder()
-//                        .userId(userId)
-//                        .growthName(request.growthName())
-//                        .stickerBoardType(request.stickerBoardType())
-//                        .birthday(request.birthday())
-//                        .build()
-//        );
-//        return buildAuthResponse(user);
-//    }
-
     private User updateRoleForPendingUser(Long userId, Role role) {
         User user = getById(userId);
         if (!role.isSelectableForOnboarding()) {

@@ -8,12 +8,14 @@ import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
-import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateWithRelationRequest;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
+import kr.omong.todagtodag.domain.sticker.entity.BoardDesign;
+import kr.omong.todagtodag.domain.sticker.entity.StickerCount;
 import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -37,17 +39,32 @@ public class StickerBoardService {
     private final RelationService relationService;
 
     @Transactional
-    public Long createStickerBoard(Long todakId, StickerBoardCreateWithRelationRequest request) {
+    public Long createStickerBoard(Long todakId, Long relationId, StickerBoardCreateRequest request) {
         User todak = findUserById(todakId);
         validateTodakRole(todak);
 
-        UserRelation relation = findRelationById(request.relationId());
+        UserRelation relation = findRelationById(relationId);
         relationService.validateRelation(todak, relation);
 
         StickerBoard stickerBoard = saveStickerBoard(relation, request);
         saveMissions(stickerBoard, request.missions());
 
         return stickerBoard.getId();
+    }
+
+    @Transactional
+    public Long createDefaultStickerBoard(Long todakId, Long relationId) {
+        return createStickerBoard(
+                todakId,
+                relationId,
+                new StickerBoardCreateRequest(
+                        "스티커판",
+                        StickerCount.TEN,
+                        BoardDesign.TREE,
+                        List.of(),
+                        ""
+                )
+        );
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +90,7 @@ public class StickerBoardService {
         return toTodakResponse(stickerBoard);
     }
 
-    private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateWithRelationRequest request) {
+    private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {
         return stickerBoardRepository.save(
                 StickerBoard.builder()
                         .userRelation(relation)

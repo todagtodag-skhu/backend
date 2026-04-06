@@ -12,6 +12,7 @@ import kr.omong.todagtodag.domain.auth.repository.RefreshTokenRepository;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
+import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
@@ -27,6 +28,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserRelationRepository userRelationRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final StickerBoardRepository stickerBoardRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenGenerator refreshTokenGenerator;
     private final JwtProperties jwtProperties;
@@ -91,8 +93,12 @@ public class AuthService {
             throw new RelationException(ErrorCode.RELATION_NOT_FOUND);
         }
 
+        refreshTokenRepository.deleteAllByUserId(todak.getId());
         for (UserRelation relation : relations) {
             User sungjang = relation.getSungjang();
+            refreshTokenRepository.deleteAllByUserId(sungjang.getId());
+            stickerBoardRepository.findByUserRelation(relation)
+                    .ifPresent(stickerBoardRepository::delete);
             userRelationRepository.delete(relation);
             userRepository.delete(sungjang);
         }

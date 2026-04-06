@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 
-public record UserRelationUpdateChildInfoRequest(
-        String childName,
+public record UserRelationUpdateSungjangInfoRequest(
+        String sungjangName,
         @JsonFormat(pattern = "yyyy.MM.dd")
-        LocalDate childBirthday
+        LocalDate sungjangBirthday
 ) {
 }

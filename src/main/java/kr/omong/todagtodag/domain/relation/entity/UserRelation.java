@@ -41,21 +41,21 @@ public class UserRelation {
     @JoinColumn(name = "sungjang_id", nullable = false)
     private User sungjang;
 
-    private String childName;
-    private LocalDate childBirthday;
+    private String sungjangName;
+    private LocalDate sungjangBirthday;
 
-    public static UserRelation of(User todak, User sungjang, String childName, LocalDate childBirthday) {
+    public static UserRelation of(User todak, User sungjang, String sungjangName, LocalDate sungjangBirthday) {
         return UserRelation.builder()
                 .todak(todak)
                 .sungjang(sungjang)
-                .childName(childName)
-                .childBirthday(childBirthday)
+                .sungjangName(sungjangName)
+                .sungjangBirthday(sungjangBirthday)
                 .build();
     }
 
-    public void updateChildInfo(String childName, LocalDate childBirthday) {
-        this.childName = childName;
-        this.childBirthday = childBirthday;
+    public void updateSungjangInfo(String sungjangName, LocalDate sungjangBirthday) {
+        this.sungjangName = sungjangName;
+        this.sungjangBirthday = sungjangBirthday;
     }
 
     public boolean isOwnedByTodak(User todak) {

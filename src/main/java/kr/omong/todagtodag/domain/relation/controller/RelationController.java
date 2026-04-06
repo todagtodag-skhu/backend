@@ -9,7 +9,7 @@ import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeValidateResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateChildInfoRequest;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -100,12 +100,12 @@ public class RelationController {
     }
 
     @Operation(
-            summary = "child 정보 수정",
+            summary = "성장이 정보 수정",
             description =
                     """
-                    child의 이름과 생일을 수정합니다.
+                    성장이의 이름과 생일을 수정합니다.
                     
-                    헤더에 토닥이 유저의 accessToken을, body로는 수정할 child 이름과 생일을 담아 요청합니다.
+                    헤더에 토닥이 유저의 accessToken을, body로는 수정할 성장이 이름과 생일을 담아 요청합니다.
                     
                     경로 변수에 해당 관계의 id가 필요합니다.
                     """
@@ -116,12 +116,12 @@ public class RelationController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 유저이거나, 존재하지 않는 관계 id")
     })
     @PostMapping("/update/{relationId}")
-    public ResponseEntity<Void> updateChildInfo(
+    public ResponseEntity<Void> updateSungjangInfo(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long relationId,
-            @RequestBody UserRelationUpdateChildInfoRequest request
+            @RequestBody UserRelationUpdateSungjangInfoRequest request
             ) {
-        relationService.updateChildInfoByRelationId(userId, relationId, request);
+        relationService.updateSungjangInfoByRelationId(userId, relationId, request);
         return ResponseEntity.ok().build();
     }
 
@@ -133,7 +133,7 @@ public class RelationController {
                     
                     헤더에 토닥이 유저의 accessToken을 담아 호출해야 합니다.
                     
-                    관계 id와 child 이름 리스트를 반환합니다.
+                    관계 id와 성장이 이름 리스트를 반환합니다.
                     
                     성장이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
                     """

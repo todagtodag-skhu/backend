@@ -5,9 +5,10 @@ import kr.omong.todagtodag.domain.relation.dto.UserRelationGetResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeValidateResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.model.InviteCodeGenerator;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateChildInfoRequest;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
+import kr.omong.todagtodag.domain.relation.repository.InviteCodeRepository;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
@@ -26,6 +27,7 @@ public class RelationService {
 
     private final UserRelationRepository userRelationRepository;
     private final InviteCodeGenerator inviteCodeGenerator;
+    private final InviteCodeRepository inviteCodeRepository;
     private final UserRepository userRepository;
 
     public String generateInviteCode(Long sungjangId) {
@@ -33,15 +35,15 @@ public class RelationService {
         validateInviteCodeIssuer(sungjang);
 
         String code = inviteCodeGenerator.generate();
-        sungjang.updateInviteCode(code);
+        inviteCodeRepository.save(code, sungjang.getId());
         return code;
     }
 
     @Transactional(readOnly = true)
     public UserRelationInviteCodeValidateResponse validateInviteCode(String code) {
-        User sungjang = userRepository.findByInviteCode(code)
+        Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
                 .orElseThrow(() -> new RelationException(ErrorCode.INVALID_INVITE_CODE));
-        return new UserRelationInviteCodeValidateResponse(sungjang.getId());
+        return new UserRelationInviteCodeValidateResponse(sungjangId);
     }
 
     @Transactional
@@ -50,35 +52,36 @@ public class RelationService {
     }
 
     @Transactional
-    public Long connectByCode(Long todakId, String code, String childName, LocalDate childBirthday) {
+    public Long connectByCode(Long todakId, String code, String sungjangName, LocalDate sungjangBirthday) {
         User todak = resolveTodakUser(todakId);
 
-        User sungjang = userRepository.findByInviteCode(code)
+        Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
                 .orElseThrow(() -> new RelationException(ErrorCode.INVALID_INVITE_CODE));
+        User sungjang = getUserById(sungjangId);
         promoteToSungjangIfPending(sungjang);
-        Long sungjangId = sungjang.getId();
 
         if (userRelationRepository.existsByTodakIdAndSungjangId(todakId, sungjangId)) {
             throw new RelationException(ErrorCode.RELATION_ALREADY_EXISTS);
         }
 
+        inviteCodeRepository.delete(code);
         UserRelation relation = userRelationRepository.save(
-                UserRelation.of(todak, sungjang, childName, childBirthday)
+                UserRelation.of(todak, sungjang, sungjangName, sungjangBirthday)
         );
 
         return relation.getId();
     }
 
-    public void updateChildInfoByRelationId(Long todakId, Long relationId, UserRelationUpdateChildInfoRequest request) {
+    public void updateSungjangInfoByRelationId(Long todakId, Long relationId, UserRelationUpdateSungjangInfoRequest request) {
         User todak = getUserById(todakId);
         UserRelation relation = getRelationById(relationId);
 
         validateRole(todak, Role.TODAK);
         validateRelation(todak, relation);
 
-        relation.updateChildInfo(
-                request.childName(),
-                request.childBirthday()
+        relation.updateSungjangInfo(
+                request.sungjangName(),
+                request.sungjangBirthday()
         );
     }
 
@@ -89,7 +92,7 @@ public class RelationService {
 
         List<UserRelationGetResponse> relations = userRelationRepository.findAllByTodak(todak)
                 .stream()
-                .map(r -> new UserRelationGetResponse(r.getId(), r.getChildName()))
+                .map(r -> new UserRelationGetResponse(r.getId(), r.getSungjangName()))
                 .toList();
 
         return new UserRelationListGetResponse(relations);

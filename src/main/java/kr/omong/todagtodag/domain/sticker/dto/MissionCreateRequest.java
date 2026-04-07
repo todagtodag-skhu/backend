@@ -1,13 +1,12 @@
 package kr.omong.todagtodag.domain.sticker.dto;
 
-import kr.omong.todagtodag.domain.sticker.entity.Day;
-
-import java.util.List;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 
 public record MissionCreateRequest(
-        String name,
-        List<Day> days,
-        Integer dailyCount,
-        int rewardStickerCount
+        @NotBlank String name,
+        @NotBlank String emoticon,
+        @Min(1) int rewardStickerCount,
+        @Min(1) int targetCount
 ) {
 }

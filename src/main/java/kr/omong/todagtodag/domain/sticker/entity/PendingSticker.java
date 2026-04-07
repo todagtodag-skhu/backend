@@ -1,11 +1,7 @@
 package kr.omong.todagtodag.domain.sticker.entity;
 
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,13 +15,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 @Entity
-@Table(name = "mission")
+@Table(name = "pending_sticker")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Mission {
+public class PendingSticker {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,29 +34,11 @@ public class Mission {
     private StickerBoard stickerBoard;
 
     @Column(nullable = false)
-    private String name;
+    private String missionName;
 
     @Column(nullable = false)
     private String emoticon;
 
     @Column(nullable = false)
-    private int rewardStickerCount;
-
-    @Column(nullable = false)
-    private int targetCount;
-
-    @Column(nullable = false)
-    @Builder.Default
-    private boolean isCompleted = false;
-
-    public void update(String name, String emoticon, int rewardStickerCount, int targetCount) {
-        this.name = name;
-        this.emoticon = emoticon;
-        this.rewardStickerCount = rewardStickerCount;
-        this.targetCount = targetCount;
-    }
-
-    public void complete() {
-        isCompleted = true;
-    }
+    private LocalDate date;
 }

@@ -113,7 +113,7 @@ public class RelationService {
         return code;
     }
 
-    private void validateRole(User user, Role role) {
+    public void validateRole(User user, Role role) {
         if (!user.getRole().equals(role)) {
             throw new RelationException(ErrorCode.ROLE_MISMATCH);
         }
@@ -150,5 +150,10 @@ public class RelationService {
     private UserRelation getRelationById(Long relationId) {
         return userRelationRepository.findById(relationId)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
+    }
+
+    public UserRelation findRelationBySungjang(User sungjang) {
+        return userRelationRepository.findBySungjang(sungjang)
+                .orElseThrow(() -> new RelationException(ErrorCode.RELATION_SUNGJANG_NOT_FOUND));
     }
 }

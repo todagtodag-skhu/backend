@@ -30,9 +30,16 @@ public enum ErrorCode {
     RELATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 연결 관계입니다."),
     RELATION_TODAK_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 토닥이가 아닙니다."),
     RELATION_SUNGJANG_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 성장이가 아닙니다."),
+    RELATION_SUNGJANG_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 성장이가 소속된 관계가 존재하지 않습니다."),
 
     // Sticker
-    STICKER_BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스티커판입니다.");
+    STICKER_BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스티커판입니다."),
+    STICKER_POSITION_ALREADY_OCCUPIED(HttpStatus.CONFLICT, "해당 자리에는 이미 스티커가 존재합니다."),
+
+    // Mission
+    MISSION_REQUIRED(HttpStatus.BAD_REQUEST, "최소 1개의 미션이 포함되어야 합니다."),
+    MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 미션입니다.");
+
 
     private final HttpStatus status;
     private final String message;

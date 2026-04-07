@@ -43,12 +43,11 @@ public class SungjangStickerBoardController {
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 성장이 유저로 요청하지 않음, 또는 해당 관계의 성장이가 아님"),
             @ApiResponse(responseCode = "404", description = "유저 또는 관계가 존재하지 않음")
     })
-    @GetMapping("/{relationId}")
+    @GetMapping
     public ResponseEntity<StickerBoardGetResponse> getStickerBoard(
-            @AuthenticationPrincipal Long userId,
-            @PathVariable Long relationId
+            @AuthenticationPrincipal Long userId
     ) {
-        return ResponseEntity.ok(stickerBoardService.getStickerBoard(userId, relationId));
+        return ResponseEntity.ok(stickerBoardService.getStickerBoard(userId));
     }
 
     @Operation(

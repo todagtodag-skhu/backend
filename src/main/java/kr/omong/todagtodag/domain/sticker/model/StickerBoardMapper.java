@@ -67,7 +67,8 @@ public class StickerBoardMapper {
                         m.getName(),
                         m.getEmoticon(),
                         m.getRewardStickerCount(),
-                        m.getTargetCount()
+                        m.getTargetCount(),
+                        m.getMissionRequest() != null
                 ))
                 .toList();
     }

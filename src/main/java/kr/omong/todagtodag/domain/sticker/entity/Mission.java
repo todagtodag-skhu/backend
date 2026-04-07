@@ -1,5 +1,6 @@
 package kr.omong.todagtodag.domain.sticker.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,6 +53,9 @@ public class Mission {
     @Builder.Default
     private boolean isCompleted = false;
 
+    @OneToOne(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MissionRequest missionRequest;
+
     public void update(String name, String emoticon, int rewardStickerCount, int targetCount) {
         this.name = name;
         this.emoticon = emoticon;
@@ -60,5 +65,9 @@ public class Mission {
 
     public void complete() {
         isCompleted = true;
+    }
+
+    public boolean hasRequest() {
+        return this.missionRequest != null;
     }
 }

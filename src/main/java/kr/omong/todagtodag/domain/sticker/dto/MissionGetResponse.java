@@ -5,6 +5,7 @@ public record MissionGetResponse(
         String name,
         String emoticon,
         int rewardStickerCount,
-        int targetCount
+        int targetCount,
+        boolean isRequested
 ) {
 }

@@ -40,8 +40,9 @@ public enum ErrorCode {
 
     // Mission
     MISSION_REQUIRED(HttpStatus.BAD_REQUEST, "최소 1개의 미션이 포함되어야 합니다."),
-    MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 미션입니다.");
-
+    MISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 미션입니다."),
+    MISSION_REQUEST_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 요청입니다."),
+    MISSION_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 조르기 요청이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

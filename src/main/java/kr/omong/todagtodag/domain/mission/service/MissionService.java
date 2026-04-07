@@ -1,17 +1,17 @@
-package kr.omong.todagtodag.domain.sticker.service;
+package kr.omong.todagtodag.domain.mission.service;
 
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
-import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
-import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
-import kr.omong.todagtodag.domain.sticker.dto.MissionListGetResponse;
-import kr.omong.todagtodag.domain.sticker.entity.Mission;
+import kr.omong.todagtodag.domain.mission.dto.MissionCreateRequest;
+import kr.omong.todagtodag.domain.mission.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.mission.dto.MissionListGetResponse;
+import kr.omong.todagtodag.domain.mission.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
-import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
+import kr.omong.todagtodag.domain.mission.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.PendingStickerRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -77,7 +77,8 @@ public class MissionService {
                         m.getName(),
                         m.getEmoticon(),
                         m.getRewardStickerCount(),
-                        m.getTargetCount()
+                        m.getTargetCount(),
+                        m.hasRequest()
                 ))
                 .toList();
 

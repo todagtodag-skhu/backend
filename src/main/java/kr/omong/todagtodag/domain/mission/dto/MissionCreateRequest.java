@@ -1,4 +1,4 @@
-package kr.omong.todagtodag.domain.sticker.dto;
+package kr.omong.todagtodag.domain.mission.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

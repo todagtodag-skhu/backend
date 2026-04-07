@@ -3,15 +3,14 @@ package kr.omong.todagtodag.domain.sticker.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.BoardDesign;
-import kr.omong.todagtodag.domain.sticker.entity.Mission;
+import kr.omong.todagtodag.domain.mission.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.entity.StickerCount;
-import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
+import kr.omong.todagtodag.domain.mission.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
@@ -64,9 +63,9 @@ class StickerBoardServiceTest {
         missionRepository.save(Mission.builder()
                 .stickerBoard(stickerBoard)
                 .name("양치하기")
-                .days(List.of(Day.MON, Day.WED))
-                .dailyCount(1)
+                .emoticon("TOOTH")
                 .rewardStickerCount(1)
+                .targetCount(2)
                 .build());
 
         StickerBoardTodakGetResponse response = stickerBoardService.getStickerBoardByRelationId(
@@ -76,6 +75,9 @@ class StickerBoardServiceTest {
 
         String json = objectMapper.writeValueAsString(response);
 
-        assertThat(json).contains("\"days\":[\"MON\",\"WED\"]");
+        assertThat(json)
+                .contains("\"emoticon\":\"TOOTH\"")
+                .contains("\"targetCount\":2")
+                .contains("\"isRequested\":false");
     }
 }

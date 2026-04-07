@@ -1,18 +1,17 @@
-package kr.omong.todagtodag.domain.sticker.entity;
+package kr.omong.todagtodag.domain.mission.entity;
 
-import jakarta.persistence.CollectionTable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +50,9 @@ public class Mission {
     @Builder.Default
     private boolean isCompleted = false;
 
+    @OneToOne(mappedBy = "mission", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MissionRequest missionRequest;
+
     public void update(String name, String emoticon, int rewardStickerCount, int targetCount) {
         this.name = name;
         this.emoticon = emoticon;
@@ -60,5 +62,13 @@ public class Mission {
 
     public void complete() {
         isCompleted = true;
+    }
+
+    public boolean hasRequest() {
+        return this.missionRequest != null;
+    }
+
+    public void clearRequest() {
+        this.missionRequest = null;
     }
 }

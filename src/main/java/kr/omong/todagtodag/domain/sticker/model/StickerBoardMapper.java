@@ -1,6 +1,6 @@
 package kr.omong.todagtodag.domain.sticker.model;
 
-import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.mission.dto.MissionGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
@@ -21,7 +21,8 @@ public class StickerBoardMapper {
                 stickerBoard.getStickerCount(),
                 stickerBoard.getBoardDesign(),
                 stickerBoard.getFinalReward(),
-                toStickerResponses(stickerBoard)
+                toStickerResponses(stickerBoard),
+                toMissionResponses(stickerBoard)
         );
     }
 
@@ -60,12 +61,14 @@ public class StickerBoardMapper {
 
     private static List<MissionGetResponse> toMissionResponses(StickerBoard stickerBoard) {
         return stickerBoard.getMissions().stream()
+                .filter(m -> !m.isCompleted())
                 .map(m -> new MissionGetResponse(
                         m.getId(),
                         m.getName(),
-                        m.getDays(),
-                        m.getDailyCount(),
-                        m.getRewardStickerCount()
+                        m.getEmoticon(),
+                        m.getRewardStickerCount(),
+                        m.getTargetCount(),
+                        m.getMissionRequest() != null
                 ))
                 .toList();
     }

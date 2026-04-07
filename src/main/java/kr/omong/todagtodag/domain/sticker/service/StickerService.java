@@ -37,7 +37,7 @@ public class StickerService {
         StickerBoard stickerBoard = findActiveStickerBoard(relation);
         validatePositionNotOccupied(stickerBoard, position);
 
-        pendingStickerRepository.findFirstStickerBoardOrderByIdAsc(stickerBoard)
+        pendingStickerRepository.findFirstByStickerBoardOrderByIdAsc(stickerBoard)
                 .ifPresent(pendingSticker -> {
                     pendingStickerRepository.delete(pendingSticker);
                     stickerRepository.save(

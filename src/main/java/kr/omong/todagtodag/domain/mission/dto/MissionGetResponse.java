@@ -1,10 +1,11 @@
-package kr.omong.todagtodag.domain.sticker.dto;
+package kr.omong.todagtodag.domain.mission.dto;
 
 public record MissionGetResponse(
         Long missionId,
         String name,
         String emoticon,
         int rewardStickerCount,
-        int targetCount
+        int targetCount,
+        boolean isRequested
 ) {
 }

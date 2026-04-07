@@ -77,7 +77,8 @@ public class MissionService {
                         m.getName(),
                         m.getEmoticon(),
                         m.getRewardStickerCount(),
-                        m.getTargetCount()
+                        m.getTargetCount(),
+                        m.hasRequest()
                 ))
                 .toList();
 

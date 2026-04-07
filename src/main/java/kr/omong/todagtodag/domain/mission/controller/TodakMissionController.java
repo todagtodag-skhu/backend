@@ -56,6 +56,34 @@ public class TodakMissionController {
     }
 
     @Operation(
+            summary = "미션 목록 조회",
+            description =
+                    """
+                    토닥이가 진행 중인 스티커판의 미션 목록을 조회합니다.
+                    
+                    헤더에 토닥이 유저의 accessToken을 담아 호출해야 하며, 결로 변수에 관계 id가 필요합니다.
+                    
+                    완료된 미션은 조회되지 않습니다.
+                    
+                    성장이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
+                    
+                    해당 관계의 토닥이가 아닐 경우에도 에러가 발생합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "미션 목록 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토닥이 유저로 요청하지 않음, 또는 해당 관계의 토닥이가 아님"),
+            @ApiResponse(responseCode = "404", description = "유저, 관계 또는 스티커판이 존재하지 않음")
+    })
+    @GetMapping("/{relationId}")
+    public ResponseEntity<MissionListGetResponse> getMissions(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long relationId
+    ) {
+        return ResponseEntity.ok(missionService.getMissions(userId, relationId));
+    }
+
+    @Operation(
             summary = "미션 수정",
             description =
                     """

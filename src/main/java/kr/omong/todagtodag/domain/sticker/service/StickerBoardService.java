@@ -45,6 +45,8 @@ public class StickerBoardService {
         UserRelation relation = findRelationById(relationId);
         relationService.validateRelation(todak, relation);
 
+        validateMissionNotEmpty(request.missions());
+
         StickerBoard stickerBoard = saveStickerBoard(relation, request);
         saveMissions(stickerBoard, request.missions());
 
@@ -52,13 +54,11 @@ public class StickerBoardService {
     }
 
     @Transactional(readOnly = true)
-    public StickerBoardGetResponse getStickerBoard(Long sungjangId, Long relationId) {
+    public StickerBoardGetResponse getStickerBoard(Long sungjangId) {
         User sungjang = findUserById(sungjangId);
         validateSungjangRole(sungjang);
 
-        UserRelation relation = findRelationById(relationId);
-        validateSungjangInRelation(sungjang, relation);
-
+        UserRelation relation = relationService.findRelationBySungjang(sungjang);
         StickerBoard stickerBoard = findActiveStickerBoard(relation);
         return StickerBoardMapper.toSungjangResponse(stickerBoard);
     }
@@ -125,9 +125,9 @@ public class StickerBoardService {
                 .map(m -> Mission.builder()
                         .stickerBoard(stickerBoard)
                         .name(m.name())
-                        .days(m.days())
-                        .dailyCount(m.dailyCount())
+                        .emoticon(m.emoticon())
                         .rewardStickerCount(m.rewardStickerCount())
+                        .targetCount(m.targetCount())
                         .build())
                 .toList();
         missionRepository.saveAll(missionEntities);
@@ -163,6 +163,10 @@ public class StickerBoardService {
 
     private StickerBoard findActiveStickerBoard(UserRelation relation) {
         return stickerBoardRepository.findByUserRelationAndIsCompleted(relation, false)
+                .orElseThrow(() -> new StickerBoardException(ErrorCode.STICKER_BOARD_NOT_FOUND));
+    }
+    public StickerBoard findStickerBoardById(Long stickerBoardId) {
+        return stickerBoardRepository.findById(stickerBoardId)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 
@@ -174,5 +178,11 @@ public class StickerBoardService {
     private UserRelation findRelationBySungjang(User sungjang) {
         return userRelationRepository.findBySungjang(sungjang)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
+    }
+
+    private void validateMissionNotEmpty(List<MissionCreateRequest> missions) {
+        if (missions == null || missions.isEmpty()) {
+            throw new StickerBoardException(ErrorCode.MISSION_REQUIRED);
+        }
     }
 }

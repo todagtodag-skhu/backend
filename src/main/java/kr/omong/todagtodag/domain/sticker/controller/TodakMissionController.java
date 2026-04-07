@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateResponse;
 import kr.omong.todagtodag.domain.sticker.service.MissionService;
@@ -48,7 +49,7 @@ public class TodakMissionController {
     public ResponseEntity<MissionCreateResponse> createMission(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long relationId,
-            @RequestBody MissionCreateRequest request
+            @Valid @RequestBody MissionCreateRequest request
     ) {
         Long missionId = missionService.createMission(userId, relationId, request);
         return ResponseEntity.ok(new MissionCreateResponse(missionId));
@@ -76,7 +77,7 @@ public class TodakMissionController {
     public ResponseEntity<Void> updateMission(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long missionId,
-            @RequestBody MissionCreateRequest request
+            @Valid @RequestBody MissionCreateRequest request
     ) {
         missionService.updateMission(userId, missionId, request);
         return ResponseEntity.ok().build();

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.sticker.dto.StickerAttachRequest;
 import kr.omong.todagtodag.domain.sticker.service.StickerService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class SungjangStickerController {
     @PostMapping("/attach")
     public ResponseEntity<Void> attachSticker(
             @AuthenticationPrincipal Long userId,
-            @RequestBody StickerAttachRequest request
+            @Valid @RequestBody StickerAttachRequest request
     ) {
         stickerService.attachSticker(userId, request.position());
         return ResponseEntity.ok().build();

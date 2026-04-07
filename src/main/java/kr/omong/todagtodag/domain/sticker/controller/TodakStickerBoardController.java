@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardListMemoryResponse;
@@ -47,7 +48,7 @@ public class TodakStickerBoardController {
     public ResponseEntity<StickerBoardCreateResponse> createStickerBoard(
             @AuthenticationPrincipal Long userId,
             @PathVariable Long relationId,
-            @RequestBody StickerBoardCreateRequest request
+            @Valid @RequestBody StickerBoardCreateRequest request
     ) {
         Long stickerBoardId = stickerBoardService.createStickerBoard(userId, relationId, request);
         return ResponseEntity.ok(new StickerBoardCreateResponse(stickerBoardId));

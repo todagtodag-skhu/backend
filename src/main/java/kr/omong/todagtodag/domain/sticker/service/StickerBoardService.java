@@ -51,13 +51,14 @@ public class StickerBoardService {
     }
 
     @Transactional(readOnly = true)
-    public StickerBoardGetResponse getStickerBoard(Long sungjangId, Long stickerBoardId) {
+    public StickerBoardGetResponse getStickerBoard(Long sungjangId, Long relationId) {
         User sungjang = findUserById(sungjangId);
         validateSungjangRole(sungjang);
 
-        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
-        validateSungjangInRelation(sungjang, stickerBoard);
+        UserRelation relation = findRelationById(relationId);
+        validateSungjangInRelation(sungjang, relation);
 
+        StickerBoard stickerBoard = findActiveStickerBoard(relation);
         return toResponse(stickerBoard);
     }
 
@@ -120,9 +121,9 @@ public class StickerBoardService {
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 
-    private void validateSungjangInRelation(User sungjang, StickerBoard stickerBoard) {
-        if (!stickerBoard.getUserRelation().getSungjang().equals(sungjang)) {
-            throw new RelationException(ErrorCode.RELATION_TODAK_MISMATCH);
+    private void validateSungjangInRelation(User sungjang, UserRelation relation) {
+        if (!relation.getSungjang().getId().equals(sungjang.getId())) {
+            throw new RelationException(ErrorCode.RELATION_SUNGJANG_MISMATCH);
         }
     }
 
@@ -146,13 +147,13 @@ public class StickerBoardService {
         );
     }
 
-    private StickerBoard findStickerBoardById(Long stickerBoardId) {
-        return stickerBoardRepository.findById(stickerBoardId)
+    private StickerBoard findActiveStickerBoard(UserRelation relation) {
+        return stickerBoardRepository.findByUserRelationAndIsCompleted(relation, false)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 
     private StickerBoard findStickerBoardByRelation(UserRelation relation) {
-        return stickerBoardRepository.findByUserRelation(relation)
+        return stickerBoardRepository.findByUserRelationAndIsCompleted(relation, false)
                 .orElseThrow(() -> new StickerBoardException(ErrorCode.STICKER_BOARD_NOT_FOUND));
     }
 

@@ -29,6 +29,7 @@ public enum ErrorCode {
     RELATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 연결된 관계입니다."),
     RELATION_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 연결 관계입니다."),
     RELATION_TODAK_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 토닥이가 아닙니다."),
+    RELATION_SUNGJANG_MISMATCH(HttpStatus.FORBIDDEN, "해당 관계의 성장이가 아닙니다."),
 
     // Sticker
     STICKER_BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스티커판입니다.");

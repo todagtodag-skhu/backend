@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface StickerBoardRepository extends JpaRepository<StickerBoard, Long> {
 
-    Optional<StickerBoard> findByUserRelation(UserRelation userRelation);
+    Optional<StickerBoard> findByUserRelationAndIsCompleted(UserRelation userRelation, boolean isCompleted);
+
 }

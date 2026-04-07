@@ -23,14 +23,14 @@ public class SungjangStickerBoardController {
     private final StickerBoardService stickerBoardService;
 
     @Operation(
-            summary = "스티커판 조회",
+            summary = "활성화 스티커판 조회",
             description =
                     """
-                    성장이 유저가 스티커판을 조회합니다.
+                    성장이 유저가 현재 활성화된 스티커판을 조회합니다.
                     
-                    헤더에 성장이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 조회할 스티커판의 id가 필요합니다.
+                    헤더에 성장이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 해당 관계의 id가 필요합니다.
                     
-                    스티커판 정보와 부착된 모든 스티커 정보를 반환합니다.
+                    활성화된 스티커판 정보와 해당 스티커판의 부착된 모든 스티커 정보를 반환합니다.
                     
                     토닥이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
                     
@@ -40,13 +40,13 @@ public class SungjangStickerBoardController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "스티커판 조회 성공"),
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 성장이 유저로 요청하지 않음, 또는 해당 관계의 성장이가 아님"),
-            @ApiResponse(responseCode = "404", description = "유저 또는 스티커판이 존재하지 않음")
+            @ApiResponse(responseCode = "404", description = "유저 또는 관계가 존재하지 않음")
     })
-    @GetMapping("/{stickerBoardId}")
+    @GetMapping("/{relationId}")
     public ResponseEntity<StickerBoardGetResponse> getStickerBoard(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long stickerBoardId
+            @PathVariable Long relationId
     ) {
-        return ResponseEntity.ok(stickerBoardService.getStickerBoard(userId, stickerBoardId));
+        return ResponseEntity.ok(stickerBoardService.getStickerBoard(userId, relationId));
     }
 }

@@ -33,13 +33,13 @@ public class RelationController {
             summary = "초대코드 생성",
             description =
                     """
-                    PENDING 유저 또는 성장이가 초대코드를 생성합니다.
+                    기존 연결이 존재하는 성장이가 초대코드를 생성합니다.
                     
                     헤더에 accessToken을 담아 호출해야 하며, 생성된 코드를 body로 반환합니다.
                     
                     생성된 코드는 5분 동안 유지됩니다.
                     
-                    PENDING 유저와 성장이 유저가 실행할 수 있습니다.
+                    PENDING 유저는 /users/onboarding/sungjang/invite-code를 사용해야 합니다.
                     """
     )
     @ApiResponses({
@@ -59,7 +59,7 @@ public class RelationController {
             summary = "토닥이 - 코드 입력",
             description =
                     """
-                    이미 온보딩된 토닥이 유저가 코드를 입력하여 성장이와 추가로 연결합니다.
+                    연결된 성장이가 1명이상 존재하는 토닥이 유저가 코드를 입력하여 성장이와 추가로 연결합니다.
                     
                     헤더에 accessToken을 담아 호출해야 하며, code를 body로 입력해야 합니다.
                     

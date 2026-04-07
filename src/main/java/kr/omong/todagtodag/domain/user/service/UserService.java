@@ -3,6 +3,7 @@ package kr.omong.todagtodag.domain.user.service;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -50,5 +51,9 @@ public class UserService {
                 .accessToken(relation.accessToken())
                 .role(relation.role())
                 .build();
+    }
+
+    public UserRelationInviteCodeResponse generateSungjangOnboardingInviteCode(Long userId) {
+        return new UserRelationInviteCodeResponse(relationService.generateOnboardingInviteCode(userId));
     }
 }

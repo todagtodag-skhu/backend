@@ -33,11 +33,16 @@ public class RelationService {
 
     public String generateInviteCode(Long sungjangId) {
         User sungjang = getUserById(sungjangId);
-        validateInviteCodeIssuer(sungjang);
+        validateRole(sungjang, Role.SUNGJANG);
 
-        String code = inviteCodeGenerator.generate();
-        inviteCodeRepository.save(code, sungjang.getId());
-        return code;
+        return saveInviteCode(sungjang);
+    }
+
+    public String generateOnboardingInviteCode(Long pendingSungjangId) {
+        User pendingSungjang = getUserById(pendingSungjangId);
+        validateRole(pendingSungjang, Role.PENDING);
+
+        return saveInviteCode(pendingSungjang);
     }
 
     @Transactional
@@ -102,10 +107,10 @@ public class RelationService {
         return new UserRelationListGetResponse(relations);
     }
 
-    private void validateInviteCodeIssuer(User user) {
-        if (user.getRole() == Role.TODAK) {
-            throw new RelationException(ErrorCode.ROLE_MISMATCH);
-        }
+    private String saveInviteCode(User sungjang) {
+        String code = inviteCodeGenerator.generate();
+        inviteCodeRepository.save(code, sungjang.getId());
+        return code;
     }
 
     private void validateRole(User user, Role role) {

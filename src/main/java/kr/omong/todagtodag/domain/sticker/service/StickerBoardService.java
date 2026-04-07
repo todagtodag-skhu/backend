@@ -92,6 +92,23 @@ public class StickerBoardService {
         return new StickerBoardListMemoryResponse(stickerBoards);
     }
 
+    @Transactional(readOnly = true)
+    public StickerBoardListMemoryResponse getCompletedStickerBoardsByRelation(Long todakId, Long relationId) {
+        User todak = findUserById(todakId);
+        validateTodakRole(todak);
+
+        UserRelation relation = findRelationById(relationId);
+        relationService.validateRelation(todak, relation);
+
+        List<StickerBoardMemoryResponse> stickerBoards =
+                stickerBoardRepository.findAllByUserRelationAndIsCompleted(relation, true)
+                        .stream()
+                        .map(this::toMemoryResponse)
+                        .toList();
+
+        return new StickerBoardListMemoryResponse(stickerBoards);
+    }
+
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {
         return stickerBoardRepository.save(
                 StickerBoard.builder()

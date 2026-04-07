@@ -14,8 +14,6 @@ import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
-import kr.omong.todagtodag.domain.sticker.entity.BoardDesign;
-import kr.omong.todagtodag.domain.sticker.entity.StickerCount;
 import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -50,21 +48,6 @@ public class StickerBoardService {
         saveMissions(stickerBoard, request.missions());
 
         return stickerBoard.getId();
-    }
-
-    @Transactional
-    public Long createDefaultStickerBoard(Long todakId, Long relationId) {
-        return createStickerBoard(
-                todakId,
-                relationId,
-                new StickerBoardCreateRequest(
-                        "스티커판",
-                        StickerCount.TEN,
-                        BoardDesign.TREE,
-                        List.of(),
-                        ""
-                )
-        );
     }
 
     @Transactional(readOnly = true)

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateResponse;
-import kr.omong.todagtodag.domain.sticker.dto.StickerBoardRelationCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.service.StickerBoardService;
 import lombok.RequiredArgsConstructor;
@@ -24,24 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TodakStickerBoardController {
 
     private final StickerBoardService stickerBoardService;
-
-    @Operation(
-            summary = "기본 스티커판 생성",
-            description = "relationId를 기준으로 기본값 스티커판을 생성합니다."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "스티커판 생성 성공"),
-            @ApiResponse(responseCode = "403", description = "토큰이 없거나 해당 관계의 토닥이가 아님"),
-            @ApiResponse(responseCode = "404", description = "유저 또는 관계를 찾을 수 없음")
-    })
-    @PostMapping("/sticker-boards")
-    public ResponseEntity<StickerBoardCreateResponse> createDefaultStickerBoard(
-            @AuthenticationPrincipal Long userId,
-            @RequestBody StickerBoardRelationCreateRequest request
-    ) {
-        Long stickerBoardId = stickerBoardService.createDefaultStickerBoard(userId, request.relationId());
-        return ResponseEntity.ok(new StickerBoardCreateResponse(stickerBoardId));
-    }
 
     @Operation(
             summary = "스티커판 생성",

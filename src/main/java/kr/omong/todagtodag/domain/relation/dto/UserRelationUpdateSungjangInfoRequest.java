@@ -1,9 +1,17 @@
 package kr.omong.todagtodag.domain.relation.dto;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 
 public record UserRelationUpdateSungjangInfoRequest(
-        String name,
-        Date birthday
+        @NotBlank
+        String sungjangName,
+
+        @NotNull
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate sungjangBirthday
 ) {
 }

@@ -16,7 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -42,7 +42,7 @@ public class UserRelation {
     private User sungjang;
 
     private String sungjangName;
-    private Date sungjangBirthday;
+    private LocalDate sungjangBirthday;
 
     public static UserRelation of(User todak, User sungjang) {
         return UserRelation.builder()
@@ -51,9 +51,9 @@ public class UserRelation {
                 .build();
     }
 
-    public void updateSungjangInfo(String name, Date birthday) {
-        this.sungjangName = name;
-        this.sungjangBirthday = birthday;
+    public void updateSungjangInfo(String sungjangName, LocalDate sungjangBirthday) {
+        this.sungjangName = sungjangName;
+        this.sungjangBirthday = sungjangBirthday;
     }
 
     public boolean isOwnedByTodak(User todak) {

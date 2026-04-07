@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
 import kr.omong.todagtodag.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,15 +35,14 @@ public class UserOnBoardingController {
         return ResponseEntity.ok(userService.onboardTodak(userId, request));
     }
 
-//    @Operation(
-//            summary = "성장이 온보딩",
-//            description = "PENDING 권한의 access token으로 호출합니다. 성장이 이름, 스티커판 종류, 생일을 저장하고 역할을 SUNGJANG으로 변경합니다."
-//    )
-//    @PostMapping("/onboarding/sungjang")
-//    public ResponseEntity<AuthResponse> onboardSungjang(
-//            @AuthenticationPrincipal Long userId,
-//            @Valid @RequestBody SungjangOnboardingRequest request
-//    ) {
-//        return ResponseEntity.ok(userService.onboardSungjang(userId, request));
-//    }
+    @Operation(
+            summary = "성장이 온보딩 - 초대코드 생성",
+            description = "PENDING 권한의 access token으로 호출합니다. 토닥이와 최초 연결하기 위한 초대코드를 생성합니다."
+    )
+    @PostMapping("/onboarding/sungjang/invite-code")
+    public ResponseEntity<UserRelationInviteCodeResponse> generateSungjangOnboardingInviteCode(
+            @AuthenticationPrincipal Long userId
+    ) {
+        return ResponseEntity.ok(userService.generateSungjangOnboardingInviteCode(userId));
+    }
 }

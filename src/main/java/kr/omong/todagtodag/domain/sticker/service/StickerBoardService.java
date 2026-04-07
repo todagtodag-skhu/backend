@@ -8,7 +8,7 @@ import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
-import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateWithRelationRequest;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
@@ -37,11 +37,11 @@ public class StickerBoardService {
     private final RelationService relationService;
 
     @Transactional
-    public Long createStickerBoard(Long todakId, StickerBoardCreateWithRelationRequest request) {
+    public Long createStickerBoard(Long todakId, Long relationId, StickerBoardCreateRequest request) {
         User todak = findUserById(todakId);
         validateTodakRole(todak);
 
-        UserRelation relation = findRelationById(request.relationId());
+        UserRelation relation = findRelationById(relationId);
         relationService.validateRelation(todak, relation);
 
         StickerBoard stickerBoard = saveStickerBoard(relation, request);
@@ -73,7 +73,7 @@ public class StickerBoardService {
         return toTodakResponse(stickerBoard);
     }
 
-    private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateWithRelationRequest request) {
+    private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {
         return stickerBoardRepository.save(
                 StickerBoard.builder()
                         .userRelation(relation)
@@ -164,7 +164,7 @@ public class StickerBoardService {
                 .map(m -> new MissionGetResponse(
                         m.getId(),
                         m.getName(),
-                        m.getDays(),
+                        List.copyOf(m.getDays()),
                         m.getDailyCount(),
                         m.getRewardStickerCount()
                 ))

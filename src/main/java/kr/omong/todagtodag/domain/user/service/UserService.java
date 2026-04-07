@@ -2,7 +2,8 @@ package kr.omong.todagtodag.domain.user.service;
 
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -19,7 +20,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RelationService relationService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public User createAppleUser(String providerId) {
@@ -45,42 +45,15 @@ public class UserService {
 
     @Transactional
     public AuthResponse onboardTodak(Long userId, TodakOnboardingRequest request) {
-        User user = updateRoleForPendingUser(userId, Role.TODAK);
-        relationService.connectByCode(userId, request.inviteCode());
-        return buildAuthResponse(user);
-    }
-
-//    @Transactional
-//    public AuthResponse onboardSungjang(Long userId, SungjangOnboardingRequest request) {
-//        User user = updateRoleForPendingUser(userId, Role.SUNGJANG);
-//        sungjangProfileRepository.save(
-//                SungjangProfile.builder()
-//                        .userId(userId)
-//                        .growthName(request.growthName())
-//                        .stickerBoardType(request.stickerBoardType())
-//                        .birthday(request.birthday())
-//                        .build()
-//        );
-//        return buildAuthResponse(user);
-//    }
-
-    private User updateRoleForPendingUser(Long userId, Role role) {
-        User user = getById(userId);
-        if (!role.isSelectableForOnboarding()) {
-            throw new AuthException(ErrorCode.INVALID_ONBOARDING_ROLE);
-        }
-        if (user.getRole() != Role.PENDING) {
-            throw new AuthException(ErrorCode.ONBOARDING_ALREADY_COMPLETED);
-        }
-        user.updateRole(role);
-        return user;
-    }
-
-    private AuthResponse buildAuthResponse(User user) {
+        UserRelationConnectResponse relation = relationService.onboardTodakByCode(userId, request.inviteCode());
         return AuthResponse.builder()
                 .isNewUser(false)
-                .accessToken(jwtTokenProvider.createAccessToken(user))
-                .role(user.getRole())
+                .accessToken(relation.accessToken())
+                .role(relation.role())
                 .build();
+    }
+
+    public UserRelationInviteCodeResponse generateSungjangOnboardingInviteCode(Long userId) {
+        return new UserRelationInviteCodeResponse(relationService.generateOnboardingInviteCode(userId));
     }
 }

@@ -19,8 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @Entity
@@ -40,14 +38,27 @@ public class Mission {
     @Column(nullable = false)
     private String name;
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "mission_day", joinColumns = @JoinColumn(name = "mission_id"))
-    @Column(name = "day")
-    private List<Day> days;
-
-    private Integer dailyCount; // nullable 하기에 wrapper 클래스 사용
+    @Column(nullable = false)
+    private String emoticon;
 
     @Column(nullable = false)
     private int rewardStickerCount;
+
+    @Column(nullable = false)
+    private int targetCount;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isCompleted = false;
+
+    public void update(String name, String emoticon, int rewardStickerCount, int targetCount) {
+        this.name = name;
+        this.emoticon = emoticon;
+        this.rewardStickerCount = rewardStickerCount;
+        this.targetCount = targetCount;
+    }
+
+    public void complete() {
+        isCompleted = true;
+    }
 }

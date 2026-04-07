@@ -8,7 +8,6 @@ import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.BoardDesign;
-import kr.omong.todagtodag.domain.sticker.entity.Day;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.entity.StickerCount;

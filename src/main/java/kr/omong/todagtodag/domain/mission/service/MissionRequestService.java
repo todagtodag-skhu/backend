@@ -83,6 +83,7 @@ public class MissionRequestService {
         relationService.validateRelation(todak, missionRequest.getMission().getStickerBoard().getUserRelation());
 
         missionService.completeMission(todak.getId(), missionRequest.getMission().getId());
+        missionRequest.getMission().clearRequest();
         missionRequestRepository.delete(missionRequest);
     }
 
@@ -94,6 +95,7 @@ public class MissionRequestService {
         MissionRequest missionRequest = findMissionRequestById(missionRequestId);
         relationService.validateRelation(todak, missionRequest.getMission().getStickerBoard().getUserRelation());
 
+        missionRequest.getMission().clearRequest();
         missionRequestRepository.delete(missionRequest);
     }
 

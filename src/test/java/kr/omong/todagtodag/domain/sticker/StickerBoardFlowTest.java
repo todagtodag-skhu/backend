@@ -38,7 +38,8 @@ class StickerBoardFlowTest {
     @Test
     void createUsersConnectByInviteCodeCreateAndGetStickerBoard() throws Exception {
         String suffix = UUID.randomUUID().toString();
-        JsonNode sungjangUser = createTestUser("flow-sungjang-" + suffix);
+        String sungjangProviderId = "flow-sungjang-" + suffix;
+        JsonNode sungjangUser = createTestUser(sungjangProviderId);
         JsonNode todakUser = createTestUser("flow-todak-" + suffix);
 
         assertUnauthenticatedUserCannotAccessRelationApi();
@@ -55,6 +56,9 @@ class StickerBoardFlowTest {
         assertThat(onboardTodak.get("accessToken").asText()).isNotBlank();
         assertThat(onboardTodak.get("role").asText()).isEqualTo(Role.TODAK.name());
 
+        JsonNode onboardedSungjangUser = createTestUser(sungjangProviderId);
+        assertThat(onboardedSungjangUser.get("role").asText()).isEqualTo(Role.SUNGJANG.name());
+        String sungjangAccessToken = onboardedSungjangUser.get("accessToken").asText();
         String todakAccessToken = onboardTodak.get("accessToken").asText();
         JsonNode relations = getTodakRelations(todakAccessToken);
         assertThat(relations.get("relations")).hasSize(1);
@@ -73,15 +77,37 @@ class StickerBoardFlowTest {
         JsonNode missions = stickerBoard.get("missions");
         assertThat(missions).hasSize(2);
         assertThat(missions.get(0).get("name").asText()).isEqualTo("양치하기");
-        assertThat(missions.get(0).get("days").get(0).asText()).isEqualTo("MON");
-        assertThat(missions.get(0).get("days").get(1).asText()).isEqualTo("WED");
-        assertThat(missions.get(0).get("dailyCount").asInt()).isEqualTo(1);
+        assertThat(missions.get(0).get("emoticon").asText()).isEqualTo("TOOTH");
         assertThat(missions.get(0).get("rewardStickerCount").asInt()).isEqualTo(1);
+        assertThat(missions.get(0).get("targetCount").asInt()).isEqualTo(1);
+        assertThat(missions.get(0).get("isRequested").asBoolean()).isFalse();
         assertThat(missions.get(1).get("name").asText()).isEqualTo("책 읽기");
-        assertThat(missions.get(1).get("days").get(0).asText()).isEqualTo("TUE");
-        assertThat(missions.get(1).get("days").get(1).asText()).isEqualTo("THU");
-        assertThat(missions.get(1).get("dailyCount").asInt()).isEqualTo(2);
+        assertThat(missions.get(1).get("emoticon").asText()).isEqualTo("BOOK");
         assertThat(missions.get(1).get("rewardStickerCount").asInt()).isEqualTo(2);
+        assertThat(missions.get(1).get("targetCount").asInt()).isEqualTo(2);
+        assertThat(missions.get(1).get("isRequested").asBoolean()).isFalse();
+
+        long missionId = missions.get(0).get("missionId").asLong();
+        requestMission(sungjangAccessToken, missionId);
+
+        JsonNode missionRequests = getMissionRequests(todakAccessToken, relationId);
+        assertThat(missionRequests.get("requests")).hasSize(1);
+        JsonNode missionRequest = missionRequests.get("requests").get(0);
+        assertThat(missionRequest.get("missionId").asLong()).isEqualTo(missionId);
+        assertThat(missionRequest.get("missionName").asText()).isEqualTo("양치하기");
+        assertThat(missionRequest.get("emoticon").asText()).isEqualTo("TOOTH");
+
+        stickerBoard = getTodakStickerBoard(todakAccessToken, relationId);
+        assertThat(stickerBoard.get("missions").get(0).get("isRequested").asBoolean()).isTrue();
+
+        acceptMissionRequest(todakAccessToken, missionRequest.get("missionRequestId").asLong());
+
+        missionRequests = getMissionRequests(todakAccessToken, relationId);
+        assertThat(missionRequests.get("requests")).isEmpty();
+
+        stickerBoard = getTodakStickerBoard(todakAccessToken, relationId);
+        assertThat(stickerBoard.get("missions")).hasSize(1);
+        assertThat(stickerBoard.get("missions").get(0).get("name").asText()).isEqualTo("책 읽기");
     }
 
     private JsonNode createTestUser(String providerId) throws Exception {
@@ -147,15 +173,15 @@ class StickerBoardFlowTest {
                                   "missions": [
                                     {
                                       "name": "양치하기",
-                                      "days": ["MON", "WED"],
-                                      "dailyCount": 1,
-                                      "rewardStickerCount": 1
+                                      "emoticon": "TOOTH",
+                                      "rewardStickerCount": 1,
+                                      "targetCount": 1
                                     },
                                     {
                                       "name": "책 읽기",
-                                      "days": ["TUE", "THU"],
-                                      "dailyCount": 2,
-                                      "rewardStickerCount": 2
+                                      "emoticon": "BOOK",
+                                      "rewardStickerCount": 2,
+                                      "targetCount": 2
                                     }
                                   ],
                                   "finalReward": "동물원 가기"
@@ -174,6 +200,26 @@ class StickerBoardFlowTest {
                 .andExpect(status().isOk())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString());
+    }
+
+    private void requestMission(String accessToken, long missionId) throws Exception {
+        mockMvc.perform(post("/sungjang/mission-request/{missionId}", missionId)
+                        .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+                .andExpect(status().isOk());
+    }
+
+    private JsonNode getMissionRequests(String accessToken, long relationId) throws Exception {
+        MvcResult result = mockMvc.perform(get("/todak/mission-request/{relationId}", relationId)
+                        .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString());
+    }
+
+    private void acceptMissionRequest(String accessToken, long missionRequestId) throws Exception {
+        mockMvc.perform(post("/todak/mission-request/{missionRequestId}/accept", missionRequestId)
+                        .header(HttpHeaders.AUTHORIZATION, bearer(accessToken)))
+                .andExpect(status().isOk());
     }
 
     private String bearer(String accessToken) {

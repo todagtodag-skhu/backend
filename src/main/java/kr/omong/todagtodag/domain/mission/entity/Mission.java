@@ -67,4 +67,8 @@ public class Mission {
     public boolean hasRequest() {
         return this.missionRequest != null;
     }
+
+    public void clearRequest() {
+        this.missionRequest = null;
+    }
 }

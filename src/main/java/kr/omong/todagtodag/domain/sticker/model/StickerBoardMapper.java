@@ -1,0 +1,72 @@
+package kr.omong.todagtodag.domain.sticker.model;
+
+import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
+import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class StickerBoardMapper {
+
+    public static StickerBoardGetResponse toSungjangResponse(StickerBoard stickerBoard) {
+        return new StickerBoardGetResponse(
+                stickerBoard.getId(),
+                stickerBoard.getName(),
+                stickerBoard.getStickerCount(),
+                stickerBoard.getBoardDesign(),
+                stickerBoard.getFinalReward(),
+                toStickerResponses(stickerBoard)
+        );
+    }
+
+    public static StickerBoardTodakGetResponse toTodakResponse(StickerBoard stickerBoard) {
+        String remainingStickerCount = stickerBoard.getStickers().size()
+                + "/" + stickerBoard.getStickerCount().getValue();
+
+        return new StickerBoardTodakGetResponse(
+                stickerBoard.getId(),
+                stickerBoard.getName(),
+                remainingStickerCount,
+                stickerBoard.getBoardDesign(),
+                stickerBoard.getFinalReward(),
+                toMissionResponses(stickerBoard)
+        );
+    }
+
+    public static StickerBoardMemoryResponse toMemoryResponse(StickerBoard stickerBoard) {
+        return new StickerBoardMemoryResponse(
+                stickerBoard.getName(),
+                toStickerResponses(stickerBoard),
+                stickerBoard.getFinalReward()
+        );
+    }
+
+    private static List<StickerGetResponse> toStickerResponses(StickerBoard stickerBoard) {
+        return stickerBoard.getStickers().stream()
+                .map(s -> new StickerGetResponse(
+                        s.getId(),
+                        s.getPosition(),
+                        s.getDate(),
+                        s.getContent()
+                ))
+                .toList();
+    }
+
+    private static List<MissionGetResponse> toMissionResponses(StickerBoard stickerBoard) {
+        return stickerBoard.getMissions().stream()
+                .map(m -> new MissionGetResponse(
+                        m.getId(),
+                        m.getName(),
+                        m.getDays(),
+                        m.getDailyCount(),
+                        m.getRewardStickerCount()
+                ))
+                .toList();
+    }
+}

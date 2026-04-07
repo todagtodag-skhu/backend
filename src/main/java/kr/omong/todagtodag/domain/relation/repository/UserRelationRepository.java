@@ -5,6 +5,7 @@ import kr.omong.todagtodag.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRelationRepository extends JpaRepository<UserRelation, Long> {
     boolean existsByTodakIdAndSungjangId(Long toakId, Long sungjangId);
@@ -12,4 +13,6 @@ public interface UserRelationRepository extends JpaRepository<UserRelation, Long
     List<UserRelation> findAllByTodakId(Long todakId);
 
     List<UserRelation> findAllByTodak(User todak);
+
+    Optional<UserRelation> findBySungjang(User sungjang);
 }

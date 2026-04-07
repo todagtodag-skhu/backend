@@ -6,6 +6,8 @@ import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardListMemoryResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
@@ -72,6 +74,22 @@ public class StickerBoardService {
 
         StickerBoard stickerBoard = findStickerBoardByRelation(relation);
         return toTodakResponse(stickerBoard);
+    }
+
+    @Transactional(readOnly = true)
+    public StickerBoardListMemoryResponse getCompletedStickerBoards(Long sungjangId) {
+        User sungjang = findUserById(sungjangId);
+        validateSungjangRole(sungjang);
+
+        UserRelation relation = findRelationBySungjang(sungjang);
+
+        List<StickerBoardMemoryResponse> stickerBoards =
+                stickerBoardRepository.findAllByUserRelationAndIsCompleted(relation, true)
+                        .stream()
+                        .map(this::toMemoryResponse)
+                        .toList();
+
+        return new StickerBoardListMemoryResponse(stickerBoards);
     }
 
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {
@@ -179,5 +197,27 @@ public class StickerBoardService {
                 stickerBoard.getFinalReward(),
                 missions
         );
+    }
+
+    private StickerBoardMemoryResponse toMemoryResponse(StickerBoard stickerBoard) {
+        List<StickerGetResponse> stickers = stickerBoard.getStickers().stream()
+                .map(s -> new StickerGetResponse(
+                        s.getId(),
+                        s.getPosition(),
+                        s.getDate(),
+                        s.getContent()
+                ))
+                .toList();
+
+        return new StickerBoardMemoryResponse(
+                stickerBoard.getName(),
+                stickers,
+                stickerBoard.getFinalReward()
+        );
+    }
+
+    private UserRelation findRelationBySungjang(User sungjang) {
+        return userRelationRepository.findBySungjang(sungjang)
+                .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }
 }

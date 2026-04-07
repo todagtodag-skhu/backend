@@ -47,7 +47,7 @@ public class RelationController {
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 성장이 유저로 요청"),
             @ApiResponse(responseCode = "404", description = "유저가 존재하지 않음")
     })
-    @PostMapping({"/invite-code", "/invite-code/sungjang"})
+    @PostMapping("/invite-code")
     public ResponseEntity<UserRelationInviteCodeResponse> generateInviteCode(
             @AuthenticationPrincipal Long userId
     ) {

@@ -2,7 +2,7 @@ package kr.omong.todagtodag.domain.user.service;
 
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
+import kr.omong.todagtodag.domain.auth.service.AuthService;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.user.dto.TodakOnboardingRequest;
@@ -20,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RelationService relationService;
+    private final AuthService authService;
 
     @Transactional
     public User createAppleUser(String providerId) {
@@ -45,10 +46,11 @@ public class UserService {
 
     @Transactional
     public AuthResponse onboardTodak(Long userId, TodakOnboardingRequest request) {
-        UserRelationConnectResponse relation = relationService.onboardTodakByCode(userId, request.inviteCode());
+        var relation = relationService.onboardTodakByCode(userId, request.inviteCode());
         return AuthResponse.builder()
                 .isNewUser(false)
                 .accessToken(relation.accessToken())
+                .refreshToken(relation.refreshToken())
                 .role(relation.role())
                 .build();
     }

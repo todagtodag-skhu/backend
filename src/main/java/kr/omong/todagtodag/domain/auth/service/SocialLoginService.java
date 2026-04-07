@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
 import kr.omong.todagtodag.domain.auth.dto.SocialLoginRequest;
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
 import kr.omong.todagtodag.domain.auth.oauth.OAuthTokenVerifier;
 import kr.omong.todagtodag.domain.auth.oauth.SocialProvider;
 import kr.omong.todagtodag.domain.auth.oauth.VerifiedOAuthUser;
@@ -24,18 +23,18 @@ public class SocialLoginService {
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
     private final Map<SocialProvider, OAuthTokenVerifier> verifierByProvider;
 
     public SocialLoginService(
             UserRepository userRepository,
             UserService userService,
-            JwtTokenProvider jwtTokenProvider,
+            AuthService authService,
             List<OAuthTokenVerifier> verifiers
     ) {
         this.userRepository = userRepository;
         this.userService = userService;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.authService = authService;
         this.verifierByProvider = verifiers.stream()
                 .collect(Collectors.toUnmodifiableMap(OAuthTokenVerifier::getProvider, Function.identity()));
     }
@@ -54,19 +53,11 @@ public class SocialLoginService {
     }
 
     private AuthResponse toExistingUserResponse(User user) {
-        return AuthResponse.builder()
-                .isNewUser(false)
-                .accessToken(jwtTokenProvider.createAccessToken(user))
-                .role(user.getRole())
-                .build();
+        return authService.issueTokens(user, false);
     }
 
     private AuthResponse createNewUserResponse(String providerId) {
         User user = userService.createAppleUser(providerId);
-        return AuthResponse.builder()
-                .isNewUser(true)
-                .accessToken(jwtTokenProvider.createAccessToken(user))
-                .role(user.getRole())
-                .build();
+        return authService.issueTokens(user, true);
     }
 }

@@ -34,5 +34,5 @@ app:
       client-id: ${APPLE_CLIENT_ID}
   jwt:
     secret: ${JWT_SECRET}
-    access-token-expiration-mill-second: 3600000
-    refresh-token-expiration-mil-lsecond: 1209600000
+    access-token-expiration-mill-second: 86400000
+    refresh-token-expiration-mill-second: 1209600000

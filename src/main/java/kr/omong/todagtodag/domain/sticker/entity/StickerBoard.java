@@ -53,6 +53,10 @@ public class StickerBoard {
     @Column(nullable = false)
     private String finalReward;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isCompleted = false;
+
     @Builder.Default
     @OneToMany(mappedBy = "stickerBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mission> missions = new ArrayList<>();

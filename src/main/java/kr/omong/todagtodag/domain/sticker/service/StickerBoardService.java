@@ -164,7 +164,7 @@ public class StickerBoardService {
                 .map(m -> new MissionGetResponse(
                         m.getId(),
                         m.getName(),
-                        m.getDays(),
+                        List.copyOf(m.getDays()),
                         m.getDailyCount(),
                         m.getRewardStickerCount()
                 ))

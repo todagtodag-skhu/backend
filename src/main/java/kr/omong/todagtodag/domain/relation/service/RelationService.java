@@ -2,7 +2,6 @@ package kr.omong.todagtodag.domain.relation.service;
 
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationGetResponse;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeValidateResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.model.InviteCodeGenerator;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -39,20 +37,8 @@ public class RelationService {
         return code;
     }
 
-    @Transactional(readOnly = true)
-    public UserRelationInviteCodeValidateResponse validateInviteCode(String code) {
-        Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
-                .orElseThrow(() -> new RelationException(ErrorCode.INVALID_INVITE_CODE));
-        return new UserRelationInviteCodeValidateResponse(sungjangId);
-    }
-
     @Transactional
     public Long connectByCode(Long todakId, String code) {
-        return connectByCode(todakId, code, null, null);
-    }
-
-    @Transactional
-    public Long connectByCode(Long todakId, String code, String sungjangName, LocalDate sungjangBirthday) {
         User todak = resolveTodakUser(todakId);
 
         Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
@@ -66,7 +52,7 @@ public class RelationService {
 
         inviteCodeRepository.delete(code);
         UserRelation relation = userRelationRepository.save(
-                UserRelation.of(todak, sungjang, sungjangName, sungjangBirthday)
+                UserRelation.of(todak, sungjang)
         );
 
         return relation.getId();
@@ -99,7 +85,7 @@ public class RelationService {
     }
 
     private void validateInviteCodeIssuer(User user) {
-        if (user.getRole() != Role.PENDING && user.getRole() != Role.SUNGJANG) {
+        if (user.getRole() == Role.TODAK) {
             throw new RelationException(ErrorCode.ROLE_MISMATCH);
         }
     }

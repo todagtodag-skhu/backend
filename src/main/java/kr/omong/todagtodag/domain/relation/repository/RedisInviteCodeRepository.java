@@ -25,10 +25,7 @@ public class RedisInviteCodeRepository implements InviteCodeRepository {
     @Override
     public Optional<Long> findSungjangIdByCode(String code) {
         String value = redisTemplate.opsForValue().get(PREFIX + code);
-        if (value == null) {
-            return Optional.empty();
-        }
-        return Optional.of(Long.valueOf(value));
+        return Optional.ofNullable(value).map(Long::parseLong);
     }
 
     @Override

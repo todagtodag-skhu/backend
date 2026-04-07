@@ -69,12 +69,7 @@ public class UserService {
     }
 
     private Long createRelation(Long userId, TodakOnboardingRequest request) {
-        return relationService.connectByCode(
-                userId,
-                request.inviteCode(),
-                request.sungjangName(),
-                request.sungjangBirthday()
-        );
+        return relationService.connectByCode(userId, request.inviteCode());
     }
 
     private AuthResponse buildAuthResponse(User user) {

@@ -44,12 +44,10 @@ public class UserRelation {
     private String sungjangName;
     private LocalDate sungjangBirthday;
 
-    public static UserRelation of(User todak, User sungjang, String sungjangName, LocalDate sungjangBirthday) {
+    public static UserRelation of(User todak, User sungjang) {
         return UserRelation.builder()
                 .todak(todak)
                 .sungjang(sungjang)
-                .sungjangName(sungjangName)
-                .sungjangBirthday(sungjangBirthday)
                 .build();
     }
 

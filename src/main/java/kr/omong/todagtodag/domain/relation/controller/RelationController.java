@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectRequest;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeResponse;
-import kr.omong.todagtodag.domain.relation.dto.UserRelationInviteCodeValidateResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationUpdateSungjangInfoRequest;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
@@ -53,21 +52,6 @@ public class RelationController {
     ) {
         String code = relationService.generateInviteCode(userId);
         return ResponseEntity.ok(new UserRelationInviteCodeResponse(code));
-    }
-
-    @Operation(
-            summary = "초대코드 검증",
-            description = "토닥이가 초대코드를 입력하면 연결 대상 성장이의 id를 반환합니다."
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "초대코드 검증 성공"),
-            @ApiResponse(responseCode = "400", description = "유효하지 않은 초대코드")
-    })
-    @GetMapping("/invite-code/{code}")
-    public ResponseEntity<UserRelationInviteCodeValidateResponse> validateInviteCode(
-            @PathVariable String code
-    ) {
-        return ResponseEntity.ok(relationService.validateInviteCode(code));
     }
 
     @Operation(

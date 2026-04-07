@@ -11,6 +11,7 @@ public record StickerBoardGetResponse(
         StickerCount stickerCount,
         BoardDesign boardDesign,
         String finalReward,
-        List<StickerGetResponse> stickers
+        List<StickerGetResponse> stickers,
+        List<MissionGetResponse> missions
 ) {
 }

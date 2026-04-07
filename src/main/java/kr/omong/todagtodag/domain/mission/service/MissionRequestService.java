@@ -1,17 +1,17 @@
-package kr.omong.todagtodag.domain.sticker.service;
+package kr.omong.todagtodag.domain.mission.service;
 
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.exception.RelationException;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
-import kr.omong.todagtodag.domain.sticker.dto.MissionRequestGetResponse;
-import kr.omong.todagtodag.domain.sticker.dto.MissionRequestListGetResponse;
-import kr.omong.todagtodag.domain.sticker.entity.Mission;
-import kr.omong.todagtodag.domain.sticker.entity.MissionRequest;
+import kr.omong.todagtodag.domain.mission.dto.MissionRequestGetResponse;
+import kr.omong.todagtodag.domain.mission.dto.MissionRequestListGetResponse;
+import kr.omong.todagtodag.domain.mission.entity.Mission;
+import kr.omong.todagtodag.domain.mission.entity.MissionRequest;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
-import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
-import kr.omong.todagtodag.domain.sticker.repository.MissionRequestRepository;
+import kr.omong.todagtodag.domain.mission.repository.MissionRepository;
+import kr.omong.todagtodag.domain.mission.repository.MissionRequestRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;

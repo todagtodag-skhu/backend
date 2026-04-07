@@ -1,6 +1,6 @@
-package kr.omong.todagtodag.domain.sticker.repository;
+package kr.omong.todagtodag.domain.mission.repository;
 
-import kr.omong.todagtodag.domain.sticker.entity.MissionRequest;
+import kr.omong.todagtodag.domain.mission.entity.MissionRequest;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package kr.omong.todagtodag.domain.sticker.dto;
+package kr.omong.todagtodag.domain.mission.dto;
 
 import java.util.List;
 

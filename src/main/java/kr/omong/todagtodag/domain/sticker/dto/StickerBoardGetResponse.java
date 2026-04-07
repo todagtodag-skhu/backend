@@ -1,5 +1,6 @@
 package kr.omong.todagtodag.domain.sticker.dto;
 
+import kr.omong.todagtodag.domain.mission.dto.MissionGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.BoardDesign;
 import kr.omong.todagtodag.domain.sticker.entity.StickerCount;
 

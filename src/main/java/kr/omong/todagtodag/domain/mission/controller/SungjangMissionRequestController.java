@@ -1,10 +1,10 @@
-package kr.omong.todagtodag.domain.sticker.controller;
+package kr.omong.todagtodag.domain.mission.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kr.omong.todagtodag.domain.sticker.service.MissionRequestService;
+import kr.omong.todagtodag.domain.mission.service.MissionRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

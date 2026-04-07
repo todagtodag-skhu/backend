@@ -1,6 +1,6 @@
 package kr.omong.todagtodag.domain.sticker.model;
 
-import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.mission.dto.MissionGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;

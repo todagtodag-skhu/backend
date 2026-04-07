@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import kr.omong.todagtodag.domain.mission.entity.Mission;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

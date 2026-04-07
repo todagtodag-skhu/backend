@@ -1,4 +1,4 @@
-package kr.omong.todagtodag.domain.sticker.entity;
+package kr.omong.todagtodag.domain.mission.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

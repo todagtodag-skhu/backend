@@ -1,7 +1,8 @@
 package kr.omong.todagtodag.domain.relation.service;
 
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
-import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
+import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
+import kr.omong.todagtodag.domain.auth.service.AuthService;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationGetResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
@@ -29,7 +30,7 @@ public class RelationService {
     private final InviteCodeGenerator inviteCodeGenerator;
     private final InviteCodeRepository inviteCodeRepository;
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
     public String generateInviteCode(Long sungjangId) {
         User sungjang = getUserById(sungjangId);
@@ -72,11 +73,13 @@ public class RelationService {
         UserRelation relation = userRelationRepository.save(
                 UserRelation.of(todak, sungjang)
         );
+        AuthResponse authResponse = authService.issueTokens(todak, false);
 
         return new UserRelationConnectResponse(
                 relation.getId(),
-                jwtTokenProvider.createAccessToken(todak),
-                todak.getRole()
+                authResponse.accessToken(),
+                authResponse.refreshToken(),
+                authResponse.role()
         );
     }
 

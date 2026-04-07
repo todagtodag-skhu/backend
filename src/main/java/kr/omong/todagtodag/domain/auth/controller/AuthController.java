@@ -6,25 +6,24 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.auth.dto.AuthResponse;
+import kr.omong.todagtodag.domain.auth.dto.RefreshRequest;
 import kr.omong.todagtodag.domain.auth.dto.SocialLoginRequest;
 import kr.omong.todagtodag.domain.auth.oauth.SocialProvider;
 import kr.omong.todagtodag.domain.auth.service.AuthService;
 import kr.omong.todagtodag.domain.auth.service.SocialLoginService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "인증 API", description = "로그인, 로그아웃, 회원 탈퇴를 처리합니다.")
-public class AuthController {
+public class  AuthController {
 
     private final AuthService authService;
     private final SocialLoginService socialLoginService;
@@ -37,7 +36,7 @@ public class AuthController {
                     
                     provider 경로 값에는 로그인할 소셜 플랫폼을 넣어야 하며, body에는 SDK에서 받은 token 값을 담아 요청합니다.
                     
-                    로그인에 성공하면 accessToken, role, 신규 유저 여부를 반환합니다.
+                    로그인에 성공하면 accessToken, refreshToken, role, 신규 유저 여부를 반환합니다.
                     """
     )
     @ApiResponses({
@@ -57,24 +56,47 @@ public class AuthController {
     }
 
     @Operation(
-            summary = "로그아웃 (Refresh Token 도입 예정)",
+            summary = "토큰 재발급",
+            description =
+                    """
+                    Refresh Token으로 Access Token과 Refresh Token을 재발급합니다.
+                    
+                    body에 refreshToken을 담아 호출해야 하며, 재발급에 성공하면 새로운 accessToken과 refreshToken을 반환합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
+            @ApiResponse(responseCode = "400", description = "요청 값 검증 실패"),
+            @ApiResponse(responseCode = "401", description = "Refresh Token이 유효하지 않거나 만료됨")
+    })
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<AuthResponse> refresh(
+            @RequestBody @Valid RefreshRequest request
+    ) {
+        return ResponseEntity.ok(authService.refresh(request.refreshToken()));
+    }
+
+    @Operation(
+            summary = "로그아웃",
             description =
                     """
                     로그아웃을 처리합니다.
                     
-                    현재는 JWT Access Token만 사용하고 있으므로, 헤더에 accessToken을 담아 호출한 뒤 클라이언트에서 토큰을 삭제하는 방식으로 로그아웃을 처리합니다.
+                    헤더에 accessToken을 담아 호출해야 하며, body에는 현재 기기에서 사용 중인 refreshToken을 담아 요청해야 합니다.
                     
-                    추후 Refresh Token이 도입되면, 해당 API에서 Refresh Token 무효화 처리까지 함께 수행할 예정입니다.
+                    서버에는 현재 기기의 Refresh Token만 삭제하며, 다른 기기에서 로그인한 Refresh Token은 유지됩니다.
                     """
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그아웃 응답 성공"),
             @ApiResponse(responseCode = "401", description = "토큰이 없거나 유효하지 않음")
     })
-    @PostMapping("/users/logout")
-    // 현재는 Access Token만 사용하므로 서버 측 로그아웃 처리는 없다.
-    // 추후 Refresh Token을 도입하면 이 API에서 토큰 무효화 로직을 처리할 예정이다.
-    public ResponseEntity<Void> logout() {
+    @PostMapping("/auth/logout")
+    public ResponseEntity<Void> logout(
+            @AuthenticationPrincipal Long userId,
+            @RequestBody @Valid RefreshRequest request
+    ) {
+        authService.logout(userId, request.refreshToken());
         return ResponseEntity.ok().build();
     }
 

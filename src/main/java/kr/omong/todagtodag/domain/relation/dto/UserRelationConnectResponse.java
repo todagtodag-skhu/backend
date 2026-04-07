@@ -5,6 +5,7 @@ import kr.omong.todagtodag.domain.user.entity.Role;
 public record UserRelationConnectResponse(
         Long relationId,
         String accessToken,
+        String refreshToken,
         Role role
 ) {
 }

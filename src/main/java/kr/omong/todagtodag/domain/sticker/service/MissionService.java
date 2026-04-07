@@ -57,6 +57,30 @@ public class MissionService {
         return mission.getId();
     }
 
+    @Transactional(readOnly = true)
+    public MissionListGetResponse getMissions(Long todakId, Long relationId) {
+        User todak = userService.getById(todakId);
+        relationService.validateRole(todak, Role.TODAK);
+
+        UserRelation relation = findRelationById(relationId);
+        relationService.validateRelation(todak, relation);
+
+        StickerBoard stickerBoard = findActiveStickerBoard(relation);
+
+        List<MissionGetResponse> missions = missionRepository.findAllByStickerBoardAndIsCompleted(stickerBoard, false)
+                .stream()
+                .map(m -> new MissionGetResponse(
+                        m.getId(),
+                        m.getName(),
+                        m.getEmoticon(),
+                        m.getRewardStickerCount(),
+                        m.getTargetCount()
+                ))
+                .toList();
+
+        return new MissionListGetResponse(missions);
+    }
+
     @Transactional
     public void updateMission(Long todakId, Long missionId, MissionCreateRequest request) {
         User todak = userService.getById(todakId);

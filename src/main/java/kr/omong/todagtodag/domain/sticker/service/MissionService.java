@@ -3,10 +3,12 @@ package kr.omong.todagtodag.domain.sticker.service;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
+import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
 import kr.omong.todagtodag.domain.sticker.entity.Sticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
+import kr.omong.todagtodag.domain.sticker.repository.PendingStickerRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +34,14 @@ public class MissionService {
     private final UserRepository userRepository;
     private final RelationService relationService;
     private final UserService userService;
-    private final StickerBoardService stickerBoardService;
+    private final PendingStickerRepository pendingStickerRepository;
 
     @Transactional
     public Long createMission(Long todakId, Long stickerBoardId, MissionCreateRequest request) {
         User todak = userService.getById(todakId);
         relationService.validateRole(todak, Role.TODAK);
 
-        StickerBoard stickerBoard = stickerBoardService.findStickerBoardById(stickerBoardId);
+        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
         relationService.validateRelation(todak, stickerBoard.getUserRelation());
 
         Mission mission = missionRepository.save(
@@ -90,7 +94,7 @@ public class MissionService {
         relationService.validateRelation(todak, stickerBoard.getUserRelation());
 
         mission.complete();
-        giveStickers(stickerBoard, mission);
+        savePendingStickers(stickerBoard, mission);
     }
 
     private Mission findMissionById(Long missionId) {
@@ -98,18 +102,23 @@ public class MissionService {
                 .orElseThrow(() -> new StickerBoardException(ErrorCode.MISSION_NOT_FOUND));
     }
 
-    private void giveStickers(StickerBoard stickerBoard, Mission mission) {
-        int currentPosition = stickerBoard.getStickers().size();
+    private void savePendingStickers(StickerBoard stickerBoard, Mission mission) {
+        List<PendingSticker> pendingStickers = new ArrayList<>();
         for (int i = 0; i < mission.getRewardStickerCount(); i++) {
-            stickerRepository.save(
-                    Sticker.builder()
+            pendingStickers.add(
+                    PendingSticker.builder()
                             .stickerBoard(stickerBoard)
-                            .position(currentPosition + i + 1)
+                            .missionName(mission.getName())
+                            .emoticon(mission.getEmoticon())
                             .date(LocalDate.now())
-                            .content(mission.getName())
                             .build()
             );
-
         }
+        pendingStickerRepository.saveAll(pendingStickers);
+    }
+
+    private StickerBoard findStickerBoardById(Long stickerBoardId) {
+        return stickerBoardRepository.findById(stickerBoardId)
+                .orElseThrow(() -> new StickerBoardException(ErrorCode.STICKER_BOARD_NOT_FOUND));
     }
 }

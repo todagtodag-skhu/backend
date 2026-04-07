@@ -1,19 +1,21 @@
 package kr.omong.todagtodag.domain.sticker.service;
 
+import kr.omong.todagtodag.domain.relation.entity.UserRelation;
+import kr.omong.todagtodag.domain.relation.exception.RelationException;
+import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.MissionCreateRequest;
+import kr.omong.todagtodag.domain.sticker.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.MissionListGetResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
-import kr.omong.todagtodag.domain.sticker.entity.Sticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.sticker.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.PendingStickerRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
-import kr.omong.todagtodag.domain.sticker.repository.StickerRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
-import kr.omong.todagtodag.domain.user.repository.UserRepository;
 import kr.omong.todagtodag.domain.user.service.UserService;
 import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -30,19 +32,20 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
     private final StickerBoardRepository stickerBoardRepository;
-    private final StickerRepository stickerRepository;
-    private final UserRepository userRepository;
     private final RelationService relationService;
     private final UserService userService;
     private final PendingStickerRepository pendingStickerRepository;
+    private final UserRelationRepository userRelationRepository;
 
     @Transactional
-    public Long createMission(Long todakId, Long stickerBoardId, MissionCreateRequest request) {
+    public Long createMission(Long todakId, Long relationId, MissionCreateRequest request) {
         User todak = userService.getById(todakId);
         relationService.validateRole(todak, Role.TODAK);
 
-        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
-        relationService.validateRelation(todak, stickerBoard.getUserRelation());
+        UserRelation relation = findRelationById(relationId);
+        relationService.validateRelation(todak, relation);
+
+        StickerBoard stickerBoard = findActiveStickerBoard(relation);
 
         Mission mission = missionRepository.save(
                 Mission.builder()
@@ -141,8 +144,13 @@ public class MissionService {
         pendingStickerRepository.saveAll(pendingStickers);
     }
 
-    private StickerBoard findStickerBoardById(Long stickerBoardId) {
-        return stickerBoardRepository.findById(stickerBoardId)
+    private UserRelation findRelationById(Long relationId) {
+        return userRelationRepository.findById(relationId)
+                .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
+    }
+
+    private StickerBoard findActiveStickerBoard(UserRelation relation) {
+        return stickerBoardRepository.findByUserRelationAndIsCompleted(relation, false)
                 .orElseThrow(() -> new StickerBoardException(ErrorCode.STICKER_BOARD_NOT_FOUND));
     }
 }

@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "Authorization 헤더 형식이 올바르지 않습니다."),
     ACCESS_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "Access Token이 유효하지 않습니다."),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "Access Token이 만료되었습니다."),
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 올바르지 않습니다. yyyy-MM-dd 형식으로 입력해주세요."),
 
     // Relation
     ROLE_MISMATCH(HttpStatus.FORBIDDEN, "해당 역할로 수행할 수 없는 작업입니다."),

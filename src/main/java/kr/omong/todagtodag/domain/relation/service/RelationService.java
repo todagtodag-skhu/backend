@@ -1,6 +1,8 @@
 package kr.omong.todagtodag.domain.relation.service;
 
 import kr.omong.todagtodag.domain.auth.exception.AuthException;
+import kr.omong.todagtodag.domain.auth.jwt.JwtTokenProvider;
+import kr.omong.todagtodag.domain.relation.dto.UserRelationConnectResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationGetResponse;
 import kr.omong.todagtodag.domain.relation.dto.UserRelationListGetResponse;
 import kr.omong.todagtodag.domain.relation.model.InviteCodeGenerator;
@@ -27,6 +29,7 @@ public class RelationService {
     private final InviteCodeGenerator inviteCodeGenerator;
     private final InviteCodeRepository inviteCodeRepository;
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public String generateInviteCode(Long sungjangId) {
         User sungjang = getUserById(sungjangId);
@@ -38,7 +41,7 @@ public class RelationService {
     }
 
     @Transactional
-    public Long connectByCode(Long todakId, String code) {
+    public UserRelationConnectResponse connectByCode(Long todakId, String code) {
         User todak = resolveTodakUser(todakId);
 
         Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
@@ -55,9 +58,14 @@ public class RelationService {
                 UserRelation.of(todak, sungjang)
         );
 
-        return relation.getId();
+        return new UserRelationConnectResponse(
+                relation.getId(),
+                jwtTokenProvider.createAccessToken(todak),
+                todak.getRole()
+        );
     }
 
+    @Transactional
     public void updateSungjangInfoByRelationId(Long todakId, Long relationId, UserRelationUpdateSungjangInfoRequest request) {
         User todak = getUserById(todakId);
         UserRelation relation = getRelationById(relationId);

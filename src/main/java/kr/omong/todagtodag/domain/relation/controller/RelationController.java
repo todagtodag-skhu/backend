@@ -59,13 +59,13 @@ public class RelationController {
             summary = "토닥이 - 코드 입력",
             description =
                     """
-                    토닥이 유저가 코드를 입력하여 성장이와 연결합니다.
+                    이미 온보딩된 토닥이 유저가 코드를 입력하여 성장이와 추가로 연결합니다.
                     
                     헤더에 accessToken을 담아 호출해야 하며, code를 body로 입력해야 합니다.
                     
                     연결에 성공했다면, 연결된 관계의 id값과 최신 accessToken을 반환합니다.
                     
-                    성장이 유저가 이 API를 실행할 경우, 그리고 이미 관계가 존재할 경우 에러가 발생합니다.
+                    PENDING 유저 또는 성장이 유저가 이 API를 실행할 경우, 그리고 이미 관계가 존재할 경우 에러가 발생합니다.
                     """
     )
     @ApiResponses({

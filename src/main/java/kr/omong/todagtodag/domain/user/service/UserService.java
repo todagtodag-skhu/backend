@@ -44,7 +44,7 @@ public class UserService {
 
     @Transactional
     public AuthResponse onboardTodak(Long userId, TodakOnboardingRequest request) {
-        UserRelationConnectResponse relation = relationService.connectByCode(userId, request.inviteCode());
+        UserRelationConnectResponse relation = relationService.onboardTodakByCode(userId, request.inviteCode());
         return AuthResponse.builder()
                 .isNewUser(false)
                 .accessToken(relation.accessToken())

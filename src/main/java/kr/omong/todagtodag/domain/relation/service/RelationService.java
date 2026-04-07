@@ -42,14 +42,24 @@ public class RelationService {
 
     @Transactional
     public UserRelationConnectResponse connectByCode(Long todakId, String code) {
-        User todak = resolveTodakUser(todakId);
+        User todak = getUserById(todakId);
+        validateRole(todak, Role.TODAK);
+        return createRelationByCode(todak, code);
+    }
 
+    @Transactional
+    public UserRelationConnectResponse onboardTodakByCode(Long todakId, String code) {
+        User todak = resolvePendingTodakUser(todakId);
+        return createRelationByCode(todak, code);
+    }
+
+    private UserRelationConnectResponse createRelationByCode(User todak, String code) {
         Long sungjangId = inviteCodeRepository.findSungjangIdByCode(code)
                 .orElseThrow(() -> new RelationException(ErrorCode.INVALID_INVITE_CODE));
         User sungjang = getUserById(sungjangId);
         promoteToSungjangIfPending(sungjang);
 
-        if (userRelationRepository.existsByTodakIdAndSungjangId(todakId, sungjangId)) {
+        if (userRelationRepository.existsByTodakIdAndSungjangId(todak.getId(), sungjangId)) {
             throw new RelationException(ErrorCode.RELATION_ALREADY_EXISTS);
         }
 
@@ -104,13 +114,12 @@ public class RelationService {
         }
     }
 
-    private User resolveTodakUser(Long userId) {
+    private User resolvePendingTodakUser(Long userId) {
         User user = getUserById(userId);
-        if (user.getRole() == Role.PENDING) {
-            user.updateRole(Role.TODAK);
-            return user;
+        if (user.getRole() != Role.PENDING) {
+            throw new AuthException(ErrorCode.ONBOARDING_ALREADY_COMPLETED);
         }
-        validateRole(user, Role.TODAK);
+        user.updateRole(Role.TODAK);
         return user;
     }
 

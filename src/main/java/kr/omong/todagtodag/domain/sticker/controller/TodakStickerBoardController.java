@@ -37,6 +37,10 @@ public class TodakStickerBoardController {
                     헤더에 토닥이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 해당 관계의 id가 필요합니다.
 
                     스티커판 이름, 스티커 개수, 디자인, 미션 목록, 최종 보상을 body로 입력해야 합니다.
+                    
+                    boardDesign: TIGER, PANDA, CAT
+                    
+                    stickerCount: TWENTY, THIRTY, FIFTY
                     """
     )
     @ApiResponses({
@@ -63,6 +67,8 @@ public class TodakStickerBoardController {
                     헤더에 토닥이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 관계 id가 필요합니다.
 
                     스티커판 이름, 잔여 스티커 개수, 디자인, 최종 보상, 미션 목록을 반환합니다.
+                    
+                    boardDesign: TIGER, PANDA, CAT
                     """
     )
     @ApiResponses({

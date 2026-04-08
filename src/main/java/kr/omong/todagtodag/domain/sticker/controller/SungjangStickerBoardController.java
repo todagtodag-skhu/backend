@@ -36,6 +36,10 @@ public class SungjangStickerBoardController {
                     토닥이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
                     
                     해당 관계의 성장이가 아닐 경우에도 에러가 발생합니다.
+                    
+                    boardDesign: TIGER, PANDA, CAT
+                    
+                    stickerCount: TWENTY, THIRTY, FIFTY
                     """
     )
     @ApiResponses({

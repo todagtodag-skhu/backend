@@ -131,11 +131,12 @@ public class MissionService {
     }
 
     private void savePendingStickers(StickerBoard stickerBoard, Mission mission) {
+        UserRelation relation = stickerBoard.getUserRelation();
         List<PendingSticker> pendingStickers = new ArrayList<>();
         for (int i = 0; i < mission.getRewardStickerCount(); i++) {
             pendingStickers.add(
                     PendingSticker.builder()
-                            .stickerBoard(stickerBoard)
+                            .userRelation(relation)
                             .missionName(mission.getName())
                             .emoticon(mission.getEmoticon())
                             .date(LocalDate.now())

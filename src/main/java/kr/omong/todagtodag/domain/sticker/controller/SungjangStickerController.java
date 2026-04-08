@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.omong.todagtodag.domain.sticker.dto.StickerAttachRequest;
+import kr.omong.todagtodag.domain.sticker.dto.StickerAttachResponse;
 import kr.omong.todagtodag.domain.sticker.service.StickerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,8 @@ public class SungjangStickerController {
                     
                     헤더에 성장이 유저의 accessToken을 담아 호출해야 하며, body에 해당 스티커의 위치를 담아 요청합니다.
                     
+                    스티커판이 다 채워졌는지에 대한 여부를 반환합니다.
+                    
                     해당 자리에 이미 스티커가 존재할 경우 에러가 발생합니다.
                     """
     )
@@ -41,11 +44,10 @@ public class SungjangStickerController {
             @ApiResponse(responseCode = "409", description = "해당 위치에 이미 스티커가 존재함")
     })
     @PostMapping("/attach")
-    public ResponseEntity<Void> attachSticker(
+    public ResponseEntity<StickerAttachResponse> attachSticker(
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody StickerAttachRequest request
     ) {
-        stickerService.attachSticker(userId, request.position());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(stickerService.attachSticker(userId, request.position()));
     }
 }

@@ -66,6 +66,14 @@ public class StickerBoard {
     @OneToMany(mappedBy = "stickerBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sticker> stickers = new ArrayList<>();
 
+    public void complete() {
+        this.isCompleted = true;
+    }
+
+    public boolean isFull() {
+        return this.stickers.size() >= this.stickerCount.getValue();
+    }
+
     public void update(String name, StickerCount stickerCount, BoardDesign boardDesign, String finalReward) {
         this.name = name;
         this.stickerCount = stickerCount;

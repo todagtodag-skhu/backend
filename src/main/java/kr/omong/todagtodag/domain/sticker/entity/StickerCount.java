@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum StickerCount {
-    TEN(10),
     TWENTY(20),
-    THIRTY(30);
+    THIRTY(30),
+    FIFTY(50);
 
     private final int value;
 

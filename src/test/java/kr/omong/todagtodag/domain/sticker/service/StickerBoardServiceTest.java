@@ -56,8 +56,8 @@ class StickerBoardServiceTest {
         StickerBoard stickerBoard = stickerBoardRepository.save(StickerBoard.builder()
                 .userRelation(relation)
                 .name("첫 스티커판")
-                .stickerCount(StickerCount.TEN)
-                .boardDesign(BoardDesign.TREE)
+                .stickerCount(StickerCount.TWENTY)
+                .boardDesign(BoardDesign.TIGER)
                 .finalReward("놀이공원")
                 .build());
         missionRepository.save(Mission.builder()

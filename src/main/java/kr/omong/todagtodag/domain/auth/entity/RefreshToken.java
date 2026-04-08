@@ -42,7 +42,15 @@ public class RefreshToken {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isRevoked = false;
+
     public boolean isExpired(LocalDateTime now) {
         return expiryDate.isBefore(now);
+    }
+
+    public void revoke() {
+        isRevoked = true;
     }
 }

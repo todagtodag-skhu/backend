@@ -7,6 +7,7 @@ import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardListMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardUpdateRequest;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.mission.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
@@ -20,6 +21,7 @@ import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
+import kr.omong.todagtodag.domain.user.service.UserService;
 import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class StickerBoardService {
     private final UserRelationRepository userRelationRepository;
     private final UserRepository userRepository;
     private final RelationService relationService;
+    private final UserService userService;
 
     @Transactional
     public Long createStickerBoard(Long todakId, Long relationId, StickerBoardCreateRequest request) {
@@ -106,6 +109,24 @@ public class StickerBoardService {
                         .toList();
 
         return new StickerBoardListMemoryResponse(stickerBoards);
+    }
+
+    @Transactional
+    public StickerBoardTodakGetResponse updateStickerBoard(Long todakId, Long stickerBoardId, StickerBoardUpdateRequest request) {
+        User todak = findUserById(todakId);
+        validateTodakRole(todak);
+
+        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
+        relationService.validateRelation(todak, stickerBoard.getUserRelation());
+
+        stickerBoard.update(
+                request.name(),
+                request.stickerCount(),
+                request.boardDesign(),
+                request.finalReward()
+        );
+
+        return StickerBoardMapper.toTodakResponse(stickerBoard);
     }
 
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {

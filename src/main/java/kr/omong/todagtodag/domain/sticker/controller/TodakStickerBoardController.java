@@ -9,11 +9,13 @@ import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardListMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerBoardUpdateRequest;
 import kr.omong.todagtodag.domain.sticker.service.StickerBoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,6 +84,38 @@ public class TodakStickerBoardController {
             @PathVariable Long relationId
     ) {
         return ResponseEntity.ok(stickerBoardService.getStickerBoardByRelationId(userId, relationId));
+    }
+
+    @Operation(
+            summary = "스티커판 수정",
+            description =
+                    """
+                    토닥이 유저가 스티커판을 수정합니다.
+                    
+                    헤더에 토닥이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 스티커판 id가 필요합니다.
+                    
+                    스티커판 이름, 스티커 개수, 디자인, 최종 보상을 수정할 수 있습니다.
+                    
+                    수정에 성공하면 스티커판을 다시 조회한 결과를 반환합니다.
+                    
+                    성장이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
+                    
+                    해당 관계의 토닥이가 아닐 경우에도 에러가 발생합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "스티커판 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 값"),
+            @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토닥이 유저로 요청하지 않음, 또는 해당 관계의 토닥이가 아님"),
+            @ApiResponse(responseCode = "404", description = "유저 또는 스티커판이 존재하지 않음")
+    })
+    @PatchMapping("/{stickerBoardId}")
+    public ResponseEntity<StickerBoardTodakGetResponse> updateStickerBoard(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long stickerBoardId,
+            @RequestBody @Valid StickerBoardUpdateRequest request
+    ) {
+        return ResponseEntity.ok(stickerBoardService.updateStickerBoard(userId, stickerBoardId, request));
     }
 
     @Operation(

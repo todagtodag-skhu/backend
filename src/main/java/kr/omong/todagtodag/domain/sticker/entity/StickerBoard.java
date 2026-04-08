@@ -65,4 +65,11 @@ public class StickerBoard {
     @Builder.Default
     @OneToMany(mappedBy = "stickerBoard", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Sticker> stickers = new ArrayList<>();
+
+    public void update(String name, StickerCount stickerCount, BoardDesign boardDesign, String finalReward) {
+        this.name = name;
+        this.stickerCount = stickerCount;
+        this.boardDesign = boardDesign;
+        this.finalReward = finalReward;
+    }
 }

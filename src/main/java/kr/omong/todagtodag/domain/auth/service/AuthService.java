@@ -35,7 +35,6 @@ public class AuthService {
     @Transactional
     public AuthResponse issueTokens(User user, boolean isNewUser) {
         LocalDateTime now = LocalDateTime.now();
-        String accessToken = jwtTokenProvider.createAccessToken(user);
         String refreshToken = refreshTokenGenerator.createRefreshToken();
         LocalDateTime expiryDate = now.plus(Duration.ofMillis(jwtProperties.refreshTokenExpirationMillSecond()));
 
@@ -46,25 +45,22 @@ public class AuthService {
                 .createdAt(now)
                 .build());
 
-        return AuthResponse.builder()
-                .isNewUser(isNewUser)
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .role(user.getRole())
-                .build();
+        return createAuthResponse(user, isNewUser, refreshToken);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = AuthException.class)
     public AuthResponse refresh(String requestToken) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(requestToken)
                 .orElseThrow(() -> new AuthException(ErrorCode.REFRESH_TOKEN_INVALID));
+        validateRevoked(refreshToken);
+        LocalDateTime now = LocalDateTime.now();
 
-        if (refreshToken.isExpired(LocalDateTime.now())) {
+        if (refreshToken.isExpired(now)) {
             refreshTokenRepository.delete(refreshToken);
             throw new AuthException(ErrorCode.REFRESH_TOKEN_EXPIRED);
         }
 
-        refreshTokenRepository.delete(refreshToken);
+        refreshToken.revoke();
         return issueTokens(refreshToken.getUser(), false);
     }
 
@@ -73,6 +69,7 @@ public class AuthService {
         User user = getAuthenticatedUser(userId);
         RefreshToken refreshToken = refreshTokenRepository.findByToken(requestToken)
                 .orElseThrow(() -> new AuthException(ErrorCode.REFRESH_TOKEN_INVALID));
+        validateRevoked(refreshToken);
 
         if (!refreshToken.getUser().getId().equals(user.getId())) {
             throw new AuthException(ErrorCode.REFRESH_TOKEN_INVALID);
@@ -110,5 +107,20 @@ public class AuthService {
         }
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    private AuthResponse createAuthResponse(User user, boolean isNewUser, String refreshToken) {
+        return AuthResponse.builder()
+                .isNewUser(isNewUser)
+                .accessToken(jwtTokenProvider.createAccessToken(user))
+                .refreshToken(refreshToken)
+                .role(user.getRole())
+                .build();
+    }
+
+    private void validateRevoked(RefreshToken refreshToken) {
+        if (refreshToken.isRevoked()) {
+            throw new AuthException(ErrorCode.REFRESH_TOKEN_REVOKED);
+        }
     }
 }

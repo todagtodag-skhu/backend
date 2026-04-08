@@ -56,8 +56,13 @@ class StickerBoardFlowTest {
         assertThat(onboardTodak.get("accessToken").asText()).isNotBlank();
         assertThat(onboardTodak.get("role").asText()).isEqualTo(Role.TODAK.name());
 
-        JsonNode onboardedSungjangUser = createTestUser(sungjangProviderId);
+        JsonNode onboardedSungjangUser = refresh(sungjangUser.get("refreshToken").asText());
         assertThat(onboardedSungjangUser.get("role").asText()).isEqualTo(Role.SUNGJANG.name());
+        assertThat(onboardedSungjangUser.get("refreshToken").asText())
+                .isNotEqualTo(sungjangUser.get("refreshToken").asText());
+        JsonNode repeatedRefresh = refresh(onboardedSungjangUser.get("refreshToken").asText());
+        assertThat(repeatedRefresh.get("refreshToken").asText())
+                .isNotEqualTo(onboardedSungjangUser.get("refreshToken").asText());
         String sungjangAccessToken = onboardedSungjangUser.get("accessToken").asText();
         String todakAccessToken = onboardTodak.get("accessToken").asText();
         JsonNode relations = getTodakRelations(todakAccessToken);
@@ -148,6 +153,19 @@ class StickerBoardFlowTest {
                                   "inviteCode": "%s"
                                 }
                                 """.formatted(inviteCode)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readTree(result.getResponse().getContentAsString());
+    }
+
+    private JsonNode refresh(String refreshToken) throws Exception {
+        MvcResult result = mockMvc.perform(post("/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "refreshToken": "%s"
+                                }
+                                """.formatted(refreshToken)))
                 .andExpect(status().isOk())
                 .andReturn();
         return objectMapper.readTree(result.getResponse().getContentAsString());

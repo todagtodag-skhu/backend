@@ -10,7 +10,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         show_sql: true
         jdbc:
           time_zone: Asia/Seoul

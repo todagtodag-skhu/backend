@@ -3,6 +3,7 @@ package kr.omong.todagtodag.domain.sticker.service;
 import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
+import kr.omong.todagtodag.domain.sticker.dto.StickerAttachResponse;
 import kr.omong.todagtodag.domain.sticker.entity.Sticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
@@ -29,7 +30,7 @@ public class StickerService {
     private final StickerRepository stickerRepository;
 
     @Transactional
-    public void attachSticker(Long sungjangId, int position) {
+    public StickerAttachResponse attachSticker(Long sungjangId, int position) {
         User sungjang = userService.getById(sungjangId);
         relationService.validateRole(sungjang, Role.SUNGJANG);
 
@@ -53,6 +54,8 @@ public class StickerService {
                         stickerBoard.complete();
                     }
                 });
+
+        return new StickerAttachResponse(stickerBoard.isCompleted());
     }
 
     private StickerBoard findActiveStickerBoard(UserRelation relation) {

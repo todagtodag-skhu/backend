@@ -68,11 +68,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<?> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
-        return ResponseEntity.badRequest().body("잘못된 요청 값입니다.");
-    }
-
     private boolean isLocalDateFormatException(HttpMessageNotReadableException exception) {
         Throwable cause = exception.getCause();
         while (cause != null) {

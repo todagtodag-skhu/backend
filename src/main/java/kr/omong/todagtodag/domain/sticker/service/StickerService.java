@@ -37,7 +37,7 @@ public class StickerService {
         StickerBoard stickerBoard = findActiveStickerBoard(relation);
         validatePositionNotOccupied(stickerBoard, position);
 
-        pendingStickerRepository.findFirstByStickerBoardOrderByIdAsc(stickerBoard)
+        pendingStickerRepository.findFirstByUserRelationOrderByIdAsc(relation)
                 .ifPresent(pendingSticker -> {
                     pendingStickerRepository.delete(pendingSticker);
                     stickerRepository.save(
@@ -49,6 +49,9 @@ public class StickerService {
                                     .emoticon(pendingSticker.getEmoticon())
                                     .build()
                     );
+                    if (stickerBoard.isFull()) {
+                        stickerBoard.complete();
+                    }
                 });
     }
 

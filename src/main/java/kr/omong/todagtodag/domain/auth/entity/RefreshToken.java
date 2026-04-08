@@ -46,9 +46,9 @@ public class RefreshToken {
     @Column(nullable = false)
     private boolean isRevoked = false;
 
-    public boolean isExpired(LocalDateTime now) {
-        return !expiryDate.isAfter(now);
-    }
+//    public boolean isExpired(LocalDateTime now) {
+//        return !expiryDate.isAfter(now);
+//    }
 
     public void revoke() {
         isRevoked = true;

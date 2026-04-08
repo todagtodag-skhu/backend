@@ -53,12 +53,12 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(requestToken)
                 .orElseThrow(() -> new AuthException(ErrorCode.REFRESH_TOKEN_INVALID));
         validateRevoked(refreshToken);
-        LocalDateTime now = LocalDateTime.now();
-
-        if (refreshToken.isExpired(now)) {
-            refreshTokenRepository.delete(refreshToken);
-            throw new AuthException(ErrorCode.REFRESH_TOKEN_EXPIRED);
-        }
+//        LocalDateTime now = LocalDateTime.now();
+//
+//        if (refreshToken.isExpired(now)) {
+//            refreshTokenRepository.delete(refreshToken);
+//            throw new AuthException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+//        }
 
         refreshToken.revoke();
         return issueTokens(refreshToken.getUser(), false);

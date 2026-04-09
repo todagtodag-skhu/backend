@@ -17,6 +17,7 @@ import kr.omong.todagtodag.domain.mission.entity.Mission;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.model.StickerBoardMapper;
 import kr.omong.todagtodag.domain.mission.repository.MissionRepository;
+import kr.omong.todagtodag.domain.sticker.repository.PendingStickerRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
@@ -39,6 +40,7 @@ public class StickerBoardService {
     private final UserRepository userRepository;
     private final RelationService relationService;
     private final UserService userService;
+    private final PendingStickerRepository pendingStickerRepository;
 
     @Transactional
     public Long createStickerBoard(Long todakId, Long relationId, StickerBoardCreateRequest request) {
@@ -75,7 +77,8 @@ public class StickerBoardService {
         relationService.validateRelation(todak, relation);
 
         StickerBoard stickerBoard = findStickerBoardByRelation(relation);
-        return StickerBoardMapper.toTodakResponse(stickerBoard);
+        Long pendingStickerCount = pendingStickerRepository.countByUserRelation(relation);
+        return StickerBoardMapper.toTodakResponse(stickerBoard, pendingStickerCount);
     }
 
     @Transactional(readOnly = true)
@@ -117,7 +120,8 @@ public class StickerBoardService {
         validateTodakRole(todak);
 
         StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
-        relationService.validateRelation(todak, stickerBoard.getUserRelation());
+        UserRelation relation = stickerBoard.getUserRelation();
+        relationService.validateRelation(todak, relation);
 
         stickerBoard.update(
                 request.name(),
@@ -126,7 +130,8 @@ public class StickerBoardService {
                 request.finalReward()
         );
 
-        return StickerBoardMapper.toTodakResponse(stickerBoard);
+        Long pendingStickerCount = pendingStickerRepository.countByUserRelation(relation);
+        return StickerBoardMapper.toTodakResponse(stickerBoard, pendingStickerCount);
     }
 
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {

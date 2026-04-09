@@ -26,14 +26,14 @@ public class StickerBoardMapper {
         );
     }
 
-    public static StickerBoardTodakGetResponse toTodakResponse(StickerBoard stickerBoard) {
-        String remainingStickerCount = stickerBoard.getStickers().size()
+    public static StickerBoardTodakGetResponse toTodakResponse(StickerBoard stickerBoard, Long pendingStickerCount) {
+        String currentStickerCount = stickerBoard.getStickers().size() + pendingStickerCount
                 + "/" + stickerBoard.getStickerCount().getValue();
 
         return new StickerBoardTodakGetResponse(
                 stickerBoard.getId(),
                 stickerBoard.getName(),
-                remainingStickerCount,
+                currentStickerCount,
                 stickerBoard.getBoardDesign(),
                 stickerBoard.getFinalReward(),
                 toMissionResponses(stickerBoard)

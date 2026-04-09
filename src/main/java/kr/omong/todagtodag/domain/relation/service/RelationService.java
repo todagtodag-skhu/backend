@@ -150,7 +150,7 @@ public class RelationService {
                 .orElseThrow(() -> new AuthException(ErrorCode.USER_NOT_FOUND));
     }
 
-    private UserRelation getRelationById(Long relationId) {
+    public UserRelation getRelationById(Long relationId) {
         return userRelationRepository.findById(relationId)
                 .orElseThrow(() -> new RelationException(ErrorCode.RELATION_NOT_FOUND));
     }

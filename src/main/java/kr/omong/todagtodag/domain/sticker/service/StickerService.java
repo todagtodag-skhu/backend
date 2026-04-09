@@ -4,6 +4,8 @@ import kr.omong.todagtodag.domain.relation.entity.UserRelation;
 import kr.omong.todagtodag.domain.relation.repository.UserRelationRepository;
 import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.StickerAttachResponse;
+import kr.omong.todagtodag.domain.sticker.dto.StickerGiveRequest;
+import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
 import kr.omong.todagtodag.domain.sticker.entity.Sticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
@@ -17,6 +19,8 @@ import kr.omong.todagtodag.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +60,22 @@ public class StickerService {
                 });
 
         return new StickerAttachResponse(stickerBoard.isCompleted());
+    }
+
+    @Transactional
+    public void giveSticker(Long todakId, Long relationId, StickerGiveRequest request) {
+        User todak = userService.getById(todakId);
+        relationService.validateRole(todak, Role.TODAK);
+
+        UserRelation relation = relationService.getRelationById(relationId);
+        pendingStickerRepository.save(
+                PendingSticker.builder()
+                        .userRelation(relation)
+                        .missionName(request.content() == null ? "잘했어요" : request.content())
+                        .emoticon(request.emoticon())
+                        .date(LocalDate.now())
+                        .build()
+        );
     }
 
     private StickerBoard findActiveStickerBoard(UserRelation relation) {

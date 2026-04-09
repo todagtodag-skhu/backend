@@ -48,6 +48,6 @@ public class SungjangStickerController {
             @AuthenticationPrincipal Long userId,
             @Valid @RequestBody StickerAttachRequest request
     ) {
-        return ResponseEntity.ok(stickerService.attachSticker(userId, request.position()));
+        return ResponseEntity.ok(stickerService.attachSticker(userId, request.pendingStickerId(), request.position()));
     }
 }

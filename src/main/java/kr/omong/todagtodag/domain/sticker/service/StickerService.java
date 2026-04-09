@@ -34,7 +34,7 @@ public class StickerService {
     private final StickerRepository stickerRepository;
 
     @Transactional
-    public StickerAttachResponse attachSticker(Long sungjangId, int position) {
+    public StickerAttachResponse attachSticker(Long sungjangId, Long pendingStickerId, int position) {
         User sungjang = userService.getById(sungjangId);
         relationService.validateRole(sungjang, Role.SUNGJANG);
 
@@ -42,22 +42,23 @@ public class StickerService {
         StickerBoard stickerBoard = findActiveStickerBoard(relation);
         validatePositionNotOccupied(stickerBoard, position);
 
-        pendingStickerRepository.findFirstByUserRelationOrderByIdAsc(relation)
-                .ifPresent(pendingSticker -> {
-                    pendingStickerRepository.delete(pendingSticker);
-                    stickerRepository.save(
-                            Sticker.builder()
-                                    .stickerBoard(stickerBoard)
-                                    .position(position)
-                                    .date(pendingSticker.getDate())
-                                    .content(pendingSticker.getMissionName())
-                                    .emoticon(pendingSticker.getEmoticon())
-                                    .build()
-                    );
-                    if (stickerBoard.isFull()) {
-                        stickerBoard.complete();
-                    }
-                });
+        PendingSticker pendingSticker = findPendingStickerById(pendingStickerId);
+        validatePendingStickerOwner(pendingSticker, relation);
+
+        pendingStickerRepository.delete(pendingSticker);
+        stickerRepository.save(
+                Sticker.builder()
+                        .stickerBoard(stickerBoard)
+                        .position(position)
+                        .date(pendingSticker.getDate())
+                        .content(pendingSticker.getMissionName())
+                        .emoticon(pendingSticker.getEmoticon())
+                        .build()
+        );
+
+        if (stickerBoard.isFull()) {
+            stickerBoard.complete();
+        }
 
         return new StickerAttachResponse(stickerBoard.isCompleted());
     }
@@ -87,5 +88,16 @@ public class StickerService {
         if (stickerRepository.existsByStickerBoardAndPosition(stickerBoard, position)) {
             throw new StickerBoardException(ErrorCode.STICKER_POSITION_ALREADY_OCCUPIED);
         }
+    }
+
+    private void validatePendingStickerOwner(PendingSticker pendingSticker, UserRelation relation) {
+        if (!pendingSticker.getUserRelation().getId().equals(relation.getId())) {
+            throw new StickerBoardException(ErrorCode.PENDING_STICKER_NOT_FOUND);
+        }
+    }
+
+    private PendingSticker findPendingStickerById(Long pendingStickerId) {
+        return pendingStickerRepository.findById(pendingStickerId)
+                .orElseThrow(() -> new StickerBoardException(ErrorCode.PENDING_STICKER_NOT_FOUND));
     }
 }

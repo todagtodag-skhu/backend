@@ -13,6 +13,7 @@ public record StickerBoardGetResponse(
         BoardDesign boardDesign,
         String finalReward,
         List<StickerGetResponse> stickers,
-        List<MissionGetResponse> missions
+        List<MissionGetResponse> missions,
+        List<PendingStickerGetResponse> pendingStickers
 ) {
 }

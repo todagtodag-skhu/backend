@@ -75,7 +75,7 @@ class StickerBoardFlowTest {
         JsonNode stickerBoard = getTodakStickerBoard(todakAccessToken, relationId);
         assertThat(stickerBoard.get("stickerBoardId").asLong()).isEqualTo(stickerBoardId);
         assertThat(stickerBoard.get("name").asText()).isEqualTo("칭찬 스티커판");
-        assertThat(stickerBoard.get("remainingStickerCount").asText()).isEqualTo("0/10");
+        assertThat(stickerBoard.get("currentStickerCount").asText()).isEqualTo("0/10");
         assertThat(stickerBoard.get("boardDesign").asText()).isEqualTo("TREE");
         assertThat(stickerBoard.get("finalReward").asText()).isEqualTo("동물원 가기");
 

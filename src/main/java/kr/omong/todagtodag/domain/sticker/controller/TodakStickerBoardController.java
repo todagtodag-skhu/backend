@@ -146,4 +146,33 @@ public class TodakStickerBoardController {
     ) {
         return ResponseEntity.ok(stickerBoardService.getCompletedStickerBoardsByRelation(userId, relationId));
     }
+
+    @Operation(
+            summary = "스티커판 강제 완료",
+            description =
+                    """
+                    토닥이 유저가 스티커판을 강제로 완료시킵니다.
+                    
+                    헤더에 토닥이 유저의 accessToken을 담아 호출해야 하며, 경로 변수에 스티커판 id가 필요합니다.
+                    
+                    해당 스티커판이 채워지지 않았더라도, 강제로 완료가 가능합니다.
+                    
+                    성장이 유저가 이 API를 실행할 경우, 에러가 발생합니다.
+                    
+                    해당 스티커판의 토닥이가 아닐 경우에도 에러가 발생합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "추억 저장소 조회 성공"),
+            @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토닥이 유저로 요청하지 않음, 또는 해당 관계의 토닥이가 아님"),
+            @ApiResponse(responseCode = "404", description = "유저 또는 관계가 존재하지 않음")
+    })
+    @PostMapping("/{stickerBoardId}/complete")
+    public ResponseEntity<Void> forceCompleteStickerBoard(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long stickerBoardId
+    ) {
+        stickerBoardService.forceComplete(userId, stickerBoardId);
+        return ResponseEntity.noContent().build();
+    }
 }

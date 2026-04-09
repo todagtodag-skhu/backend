@@ -142,6 +142,17 @@ public class StickerBoardService {
         return StickerBoardMapper.toTodakResponse(stickerBoard, pendingStickerCount);
     }
 
+    @Transactional
+    public void forceComplete(Long todakId, Long stickerBoardId) {
+        User todak = findUserById(todakId);
+        validateTodakRole(todak);
+
+        StickerBoard stickerBoard = findStickerBoardById(stickerBoardId);
+        relationService.validateRelation(todak, stickerBoard.getUserRelation());
+
+        stickerBoard.complete();
+    }
+
     private StickerBoard saveStickerBoard(UserRelation relation, StickerBoardCreateRequest request) {
         return stickerBoardRepository.save(
                 StickerBoard.builder()

@@ -1,10 +1,12 @@
 package kr.omong.todagtodag.domain.sticker.model;
 
 import kr.omong.todagtodag.domain.mission.dto.MissionGetResponse;
+import kr.omong.todagtodag.domain.sticker.dto.PendingStickerGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardTodakGetResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerGetResponse;
+import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
 import kr.omong.todagtodag.domain.sticker.entity.StickerBoard;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StickerBoardMapper {
 
-    public static StickerBoardGetResponse toSungjangResponse(StickerBoard stickerBoard) {
+    public static StickerBoardGetResponse toSungjangResponse(StickerBoard stickerBoard, List<PendingSticker> pendingStickers) {
         return new StickerBoardGetResponse(
                 stickerBoard.getId(),
                 stickerBoard.getName(),
@@ -22,7 +24,8 @@ public class StickerBoardMapper {
                 stickerBoard.getBoardDesign(),
                 stickerBoard.getFinalReward(),
                 toStickerResponses(stickerBoard),
-                toMissionResponses(stickerBoard)
+                toMissionResponses(stickerBoard),
+                toPendingStickerResponses(pendingStickers)
         );
     }
 
@@ -69,6 +72,17 @@ public class StickerBoardMapper {
                         m.getRewardStickerCount(),
                         m.getTargetCount(),
                         m.getMissionRequest() != null
+                ))
+                .toList();
+    }
+
+    private static List<PendingStickerGetResponse> toPendingStickerResponses(List<PendingSticker> pendingStickers) {
+        return pendingStickers.stream()
+                .map(p -> new PendingStickerGetResponse(
+                        p.getId(),
+                        p.getMissionName(),
+                        p.getEmoticon(),
+                        p.getDate()
                 ))
                 .toList();
     }

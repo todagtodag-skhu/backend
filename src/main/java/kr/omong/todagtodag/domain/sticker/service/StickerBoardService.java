@@ -8,6 +8,7 @@ import kr.omong.todagtodag.domain.relation.service.RelationService;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardListMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardMemoryResponse;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardUpdateRequest;
+import kr.omong.todagtodag.domain.sticker.entity.PendingSticker;
 import kr.omong.todagtodag.domain.sticker.exception.StickerBoardException;
 import kr.omong.todagtodag.domain.mission.dto.MissionCreateRequest;
 import kr.omong.todagtodag.domain.sticker.dto.StickerBoardCreateRequest;
@@ -64,12 +65,15 @@ public class StickerBoardService {
 
     @Transactional(readOnly = true)
     public StickerBoardGetResponse getStickerBoard(Long sungjangId) {
-        User sungjang = findUserById(sungjangId);
-        validateSungjangRole(sungjang);
+        User sungjang = userService.getById(sungjangId);
+        relationService.validateRole(sungjang, Role.SUNGJANG);
 
-        UserRelation relation = relationService.findRelationBySungjang(sungjang);
+        UserRelation relation = findRelationBySungjang(sungjang);
         StickerBoard stickerBoard = findActiveStickerBoard(relation);
-        return StickerBoardMapper.toSungjangResponse(stickerBoard);
+
+        List<PendingSticker> pendingStickers = pendingStickerRepository.findAllByUserRelationOrderByIdAsc(relation);
+
+        return StickerBoardMapper.toSungjangResponse(stickerBoard, pendingStickers);
     }
 
     @Transactional(readOnly = true)

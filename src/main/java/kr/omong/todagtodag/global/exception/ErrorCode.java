@@ -38,6 +38,7 @@ public enum ErrorCode {
     // Sticker
     STICKER_BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 스티커판입니다."),
     STICKER_POSITION_ALREADY_OCCUPIED(HttpStatus.CONFLICT, "해당 자리에는 이미 스티커가 존재합니다."),
+    STICKER_BOARD_IS_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "스티커판이 이미 존재합니다."),
 
     // Mission
     MISSION_REQUIRED(HttpStatus.BAD_REQUEST, "최소 1개의 미션이 포함되어야 합니다."),

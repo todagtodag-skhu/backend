@@ -19,6 +19,7 @@ import kr.omong.todagtodag.domain.sticker.model.StickerBoardMapper;
 import kr.omong.todagtodag.domain.mission.repository.MissionRepository;
 import kr.omong.todagtodag.domain.sticker.repository.PendingStickerRepository;
 import kr.omong.todagtodag.domain.sticker.repository.StickerBoardRepository;
+import kr.omong.todagtodag.domain.sticker.repository.StickerRepository;
 import kr.omong.todagtodag.domain.user.entity.Role;
 import kr.omong.todagtodag.domain.user.entity.User;
 import kr.omong.todagtodag.domain.user.repository.UserRepository;
@@ -41,6 +42,8 @@ public class StickerBoardService {
     private final RelationService relationService;
     private final UserService userService;
     private final PendingStickerRepository pendingStickerRepository;
+    private final StickerService stickerService;
+    private final StickerRepository stickerRepository;
 
     @Transactional
     public Long createStickerBoard(Long todakId, Long relationId, StickerBoardCreateRequest request) {
@@ -50,6 +53,7 @@ public class StickerBoardService {
         UserRelation relation = findRelationById(relationId);
         relationService.validateRelation(todak, relation);
 
+        validateInCompletedStickerBoardExists(relation);
         validateMissionNotEmpty(request.missions());
 
         StickerBoard stickerBoard = saveStickerBoard(relation, request);
@@ -209,6 +213,12 @@ public class StickerBoardService {
     private void validateMissionNotEmpty(List<MissionCreateRequest> missions) {
         if (missions == null || missions.isEmpty()) {
             throw new StickerBoardException(ErrorCode.MISSION_REQUIRED);
+        }
+    }
+
+    private void validateInCompletedStickerBoardExists(UserRelation relation) {
+        if (stickerBoardRepository.existsByUserRelationAndIsCompleted(relation, false)) {
+            throw new StickerBoardException(ErrorCode.STICKER_BOARD_IS_ALREADY_EXISTS);
         }
     }
 }

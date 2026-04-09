@@ -12,4 +12,6 @@ public interface StickerBoardRepository extends JpaRepository<StickerBoard, Long
     Optional<StickerBoard> findByUserRelationAndIsCompleted(UserRelation userRelation, boolean isCompleted);
 
     List<StickerBoard> findAllByUserRelationAndIsCompleted(UserRelation userRelation, boolean isCompleted);
+
+    boolean existsByUserRelationAndIsCompleted(UserRelation userRelation, boolean isCompleted);
 }

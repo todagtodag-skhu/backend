@@ -47,6 +47,7 @@ public class TodakStickerBoardController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "스티커판 생성 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 활성화 되어있는 스티커판이 존재"),
             @ApiResponse(responseCode = "403", description = "토큰이 없거나, 토닥이 유저로 요청하지 않음, 또는 해당 관계의 토닥이가 아님"),
             @ApiResponse(responseCode = "404", description = "유저 또는 관계가 존재하지 않음")
     })
